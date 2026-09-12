@@ -1,0 +1,25 @@
+project_id: "925677"
+api_token_env: CROWDIN_API_TOKEN
+base_path: .
+preserve_hierarchy: true
+
+files:
+  - source: "app/src/main/res/values/strings.xml"
+    dest: /%original_file_name%
+    translation: "app/src/main/res/values-%android_code%/%original_file_name%"
+    type: android
+    skip_untranslated_strings: true
+
+  - source: "fastlane/metadata/android/en-US/full_description.txt"
+    dest: /%original_file_name%
+    translation: "fastlane/metadata/android/%locale%/%original_file_name%"
+    type: html
+    skip_untranslated_files: true
+
+  - source: "fastlane/metadata/android/en-US/**/*.txt"
+    dest: /%original_file_name%
+    translation: "fastlane/metadata/android/%locale%/**/%original_file_name%"
+    type: txt
+    skip_untranslated_files: true
+    ignore:
+      - "fastlane/metadata/android/en-US/full_description.txt"

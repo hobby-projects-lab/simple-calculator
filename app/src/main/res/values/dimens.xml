@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="calculator_button_border_width">0.5dp</dimen>
+    <dimen name="calculator_option_button_vert_padding">6dp</dimen>
+    <dimen name="calculator_option_button_horiz_padding">20dp</dimen>
+    <dimen name="calculator_display_field_padding">5dp</dimen>
+    <dimen name="calculator_display_field_small_padding">2.5dp</dimen>
+    <dimen name="calculator_input_field_horiz_padding">5dp</dimen>
+    <dimen name="calculator_input_field_vert_padding">5dp</dimen>
+    <dimen name="calculator_history_item_vert_padding">10dp</dimen>
+
+    <dimen name="converter_display_field_border_width">0.5dp</dimen>
+    <dimen name="converter_input_field_padding">10dp</dimen>
+    <dimen name="converter_display_field_padding">5dp</dimen>
+    <dimen name="converter_input_field_horiz_padding">5dp</dimen>
+    <dimen name="converter_screen_unit_label_horiz_padding">5dp</dimen>
+
+    <dimen name="licence_dialog_horiz_padding">5dp</dimen>
+    <dimen name="licence_dialog_vert_padding">5dp</dimen>
+    <dimen name="licence_type_item_vert_padding">15dp</dimen>
+    <dimen name="licence_type_item_horiz_padding">5dp</dimen>
+    <dimen name="licence_screen_horiz_padding">5dp</dimen>
+
+    <dimen name="heading_vert_padding">15dp</dimen>
+    <dimen name="heading_horiz_padding">5dp</dimen>
+
+    <dimen name="box_item_size">105dp</dimen>
+    <dimen name="box_item_padding">5dp</dimen>
+    <dimen name="box_item_vert_spacing">5dp</dimen>
+
+    <dimen name="swap_icon_size">30dp</dimen>
+
+    <dimen name="icon_padding">4dp</dimen>
+
+    <dimen name="app_info_padding">5dp</dimen>
+</resources>
