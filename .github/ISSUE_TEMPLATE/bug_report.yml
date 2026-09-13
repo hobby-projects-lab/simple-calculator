@@ -1,0 +1,74 @@
+name: Bug report
+description: Report an issue in the app
+labels: [ "bug", "problem", "issue" ]
+body:
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "Required"
+      description: "Please read and check all the required boxes below before describing the bug."
+      options:
+        - label: "I haven't found an open or closed issue about this bug."
+          required: true
+        - label: "This issue contains only one bug report."
+          required: true
+        - label: "I understand that this issue will be closed if I don't fill in all the required fields in this form."
+          required: true
+
+  - type: dropdown
+    id: where-you-got-the-app
+    attributes:
+      label: "Where did you get the app?"
+      options:
+        - F-Droid
+        - GitHub releases
+        - Built from source code
+        - Somewhere else
+
+  - type: input
+    id: app-version
+    attributes:
+      label: "App version"
+      description: "In which version of the app did you find the bug?"
+      placeholder: "e.g : 1.0.1"
+    validations:
+      required: true
+
+  - type: input
+    id: os-version
+    attributes:
+      label: "Android/Custom ROM version"
+      description: "What version of Android/Custom ROM were you using when you found the bug?"
+      placeholder: "e.g: Android 15"
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: "Steps to reproduce the bug"
+      description: "What to do for the bug to show up?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: "Expected behavior"
+      description: "What did you expect to happen after doing the steps above?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: "Actual behavior"
+      description: "What actually happened?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-information
+    attributes:
+      label: "Additional information"
+      placeholder: "Add additional information about the bug report here if there is any."

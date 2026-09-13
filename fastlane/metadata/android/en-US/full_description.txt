@@ -1,0 +1,34 @@
+<big>Simplify your daily calculations and unit conversions with this simple 2-in-1 math toolkit.</big>
+<br>
+<br>
+<br>
+<big><b>Key Features</b></big>
+<ul>
+    <li>
+        <b>Scientific functions: </b>Perform trigonometric, logarithms, exponents, and roots functions with ease. The interface is designed for speed, allowing you to edit calculations on the fly and view history instantly.
+    </li>
+    <li>
+        <b>Real-Time Unit Conversion: </b>Experience <b><i>live conversion</i></b> that updates results as you type. No need to press an "equals" button. With support for <b><i>Metric</i></b> and <b><i>Imperial</i></b> systems, you can effortlessly convert between units like kilometres to miles, Celsius to Fahrenheit, or kilograms to pounds.
+    </li>
+    <li>
+        <b>Offline functionality: </b>Everything is offline.
+    </li>
+    <li>
+        <b>No Clutter, No Hassle: </b>Unlike bloated alternatives, our app focuses on what matters only. No permission, no ad, just <b><i>speed and simplicity</i></b>.
+    </li>
+</ul>
+<big><b>Technical Details</b></big>
+<ul>
+    <li><b>Compatibility: </b>Optimized for Android 6 and above.</li>
+    <li><b>Privacy: </b>No data is collected.</li>
+</ul>
+<big><b>Coming Soon: Arbitrary Precision</b></big>
+<br>
+Tired of rounding errors? Our next update will introduce Arbitrary Precision Arithmetic, allowing you to calculate with numbers of virtually unlimited size and accuracy.
+<ul>
+    <li><b>Exact Results: </b>Eliminate floating-point errors.</li>
+    <li><b>Massive Scale: </b>Perform operations on integers and decimals with hundreds of digits, limited only by your device's memory.</li>
+    <li><b>Advanced Support: </b>Arbitrary precision support for scientific functions and unit conversion.</li>
+    <li><b>Performance: </b>Optimized algorithms ensure that even complex calculations with hundreds of digits remain responsive.</li>
+</ul>
+Ideal for high-precision scientific computations.

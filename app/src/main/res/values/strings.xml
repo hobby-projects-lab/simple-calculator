@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Calculator</string>
+    <string name="app_full_name">Simple Calculator</string>
+    <string name="version">Version %1$s</string>
+    <string name="source">Source code</string>
+    <string name="bug_reports">Bug reports</string>
+    <string name="website">Website</string>
+    <string name="donate">Donate</string>
+    <string name="translate">Translate the app</string>
+    <string name="calculator">Calculator</string>
+    <string name="converter">Converter</string>
+    <string name="about">About</string>
+    <string name="third_party_licences">Third-party licences</string>
+    <string name="fonts">Fonts</string>
+    <string name="libraries">Libraries</string>
+    <string name="ok">OK</string>
+    <string name="app_icon">App\'s logo</string>
+    <string name="app_licence">Licence</string>
+    <string name="swap">Swap</string>
+    <string name="error">Error</string>
+    <string name="more_options">More options</string>
+    <string name="copy_text">Copy text</string>
+    <string name="copied">Copied</string>
+    <string name="backspace">Backspace</string>
+    <string name="icons">Icons</string>
+
+    <!-- Dimensions -->
+    <string name="length">Length</string>
+    <string name="time">Time</string>
+    <string name="speed">Speed</string>
+    <string name="mass">Mass</string>
+    <string name="area">Area</string>
+    <string name="volume">Volume</string>
+    <string name="density">Density</string>
+    <string name="temperature">Temperature</string>
+    <string name="force">Force</string>
+    <string name="energy">Energy</string>
+    <string name="work">Work</string>
+    <string name="power">Power</string>
+    <string name="pressure">Pressure</string>
+    <string name="angle">Angle</string>
+    <string name="frequency">Frequency</string>
+    <string name="storage">Storage</string>
+
+
+
+    <!-- Units -->
+    <string name="m">Metre</string>
+    <string name="cm">Centimetre</string>
+    <string name="mm">Millimetre</string>
+    <string name="um">Micrometre</string>
+    <string name="nm">Nanometre</string>
+    <string name="a">Angstrom</string>
+    <string name="km">Kilometre</string>
+    <string name="mi">Mile</string>
+    <string name="yd">Yard</string>
+    <string name="ft">Foot</string>
+    <string name="inch">Inch</string>
+    <string name="au">Astronomical Unit</string>
+    <string name="ly">Light Year</string>
+
+
+    <string name="sec">Second</string>
+    <string name="min">Minute</string>
+    <string name="h">Hour</string>
+    <string name="ms">Millisecond</string>
+    <string name="us">Microsecond</string>
+    <string name="ns">Nanosecond</string>
+    <string name="d">Day</string>
+    <string name="wk">Week</string>
+    <string name="yr">Year</string>
+    <string name="leap_yr">Leap Year</string>
+
+
+    <string name="mps">Metre per second</string>
+    <string name="kmph">Kilometre per hour</string>
+    <string name="kmps">Kilometre per second</string>
+    <string name="mph">Mile per hour</string>
+    <string name="ftps">Foot per second</string>
+    <string name="kn">Knot</string>
+    <string name="light_speed">Speed of light</string>
+
+
+    <string name="g">Gram</string>
+    <string name="kg">Kilogram</string>
+    <string name="mg">Milligram</string>
+    <string name="ug">Microgram</string>
+    <string name="lb">Pound</string>
+    <string name="t">Tonne</string>
+    <string name="oz">Ounce</string>
+
+
+    <string name="m2">Square Metre</string>
+    <string name="km2">Square Kilometre</string>
+    <string name="cm2">Square Centimetre</string>
+    <string name="mm2">Square Millimetre</string>
+    <string name="mi2">Square Mile</string>
+    <string name="yd2">Square Yard</string>
+    <string name="ft2">Square Foot</string>
+    <string name="in2">Square Inch</string>
+    <string name="ha">Hectare</string>
+    <string name="ac">Acre</string>
+
+
+    <string name="c">Celsius</string>
+    <string name="k">Kelvin</string>
+    <string name="f">Fahrenheit</string>
+    <string name="r">Rankine</string>
+
+
+    <string name="m3">Cubic metre</string>
+    <string name="l">Litre</string>
+    <string name="cm3">Cubic centimetre</string>
+    <string name="mm3">Cubic millimetre</string>
+    <string name="cl">Centilitre</string>
+    <string name="ml">Millilitre</string>
+    <string name="ac_ft">Acre foot</string>
+    <string name="ft3">Cubic foot</string>
+    <string name="in3">Cubic inch</string>
+
+
+    <string name="g_l">Gram per litre</string>
+    <string name="kg_l">Kilogram per litre</string>
+    <string name="g_cm3">Gram per cubic centimetre</string>
+    <string name="kg_cm3">Kilogram per cubic centimetre</string>
+    <string name="kg_m3">Kilogram per cubic metre</string>
+    <string name="lb_ft3">Pound per cubic foot</string>
+    <string name="oz_in3">Ounce per cubic inch</string>
+
+
+    <string name="n">Newton</string>
+    <string name="kN">Kilonewton</string>
+    <string name="dyn">Dyne</string>
+    <string name="lbf">Pound-force</string>
+    <string name="ozf">Ounce-force</string>
+
+
+    <string name="j">Joule</string>
+    <string name="kj">Kilojoule</string>
+    <string name="mj">Megajoule</string>
+    <string name="gj">Gigajoule</string>
+    <string name="cal">Calorie</string>
+    <string name="kcal">Kilocalorie</string>
+    <string name="wh">Watt hour</string>
+    <string name="kwh">Kilowatt hour</string>
+    <string name="mwh">Megawatt hour</string>
+    <string name="ev">Electronvolt</string>
+    <string name="erg">Erg</string>
+    <string name="btu">British thermal unit</string>
+
+
+    <string name="n_m">Newton metre</string>
+    <string name="kn_m">Kilonewton metre</string>
+    <string name="lbft">Pound foot</string>
+    <string name="ozin">Ounce inch</string>
+
+
+    <string name="w">Watt</string>
+    <string name="kw">Kilowatt</string>
+    <string name="mw">Megawatt</string>
+    <string name="gw">Gigawatt</string>
+    <string name="hp">Horsepower</string>
+    <string name="btuph">British thermal unit per hour</string>
+
+
+    <string name="pa">Pascal</string>
+    <string name="kpa">Kilopascal</string>
+    <string name="mpa">Megapascal</string>
+    <string name="bar">Bar</string>
+    <string name="mbar">Millibar</string>
+    <string name="atm">Atmosphere</string>
+    <string name="torr">Torr</string>
+    <string name="psi">Pound per square inch</string>
+    <string name="mmhg">Millimetre of mercury</string>
+    <string name="inhg">Inch of mercury</string>
+
+
+    <string name="deg">Degree</string>
+    <string name="rad">Radian</string>
+    <string name="gon">Gradian</string>
+    <string name="tr">Turn</string>
+
+
+    <string name="hz">Hertz</string>
+    <string name="khz">Kilohertz</string>
+    <string name="mhz">Megahertz</string>
+    <string name="ghz">Gigahertz</string>
+
+
+    <string name="bit">Bit</string>
+    <string name="B">Byte</string>
+
+    <string name="kbit">Kilobit</string>
+    <string name="Kibit">Kibibit</string>
+    <string name="kB">Kilobyte</string>
+    <string name="KiB">Kibibyte</string>
+
+    <string name="Mbit">Megabit</string>
+    <string name="Mibit">Mebibit</string>
+    <string name="MB">Megabyte</string>
+    <string name="MiB">Mebibyte</string>
+
+    <string name="Gbit">Gigabit</string>
+    <string name="Gibit">Gibibit</string>
+    <string name="GB">Gigabyte</string>
+    <string name="GiB">Gibibyte</string>
+
+    <string name="Tbit">Terabit</string>
+    <string name="Tibit">Tebibit</string>
+    <string name="TB">Terabyte</string>
+    <string name="TiB">Tebibyte</string>
+
+</resources>
