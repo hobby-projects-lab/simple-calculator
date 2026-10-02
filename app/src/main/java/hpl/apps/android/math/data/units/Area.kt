@@ -12,12 +12,13 @@ import hpl.apps.android.math.data.units.utils.sq_in
 import hpl.apps.android.math.data.units.utils.sq_mi
 import hpl.apps.android.math.data.units.utils.sq_yd
 import hpl.apps.android.math.utils.MeasurementUnit
+import java.math.BigDecimal
 
 enum class Area(
     @StringRes override val id: Int,
     override val symbol: String,
-    override val fromBase: (Double) -> Double,
-    override val toBase: (Double) -> Double
+    override val fromBase: (BigDecimal) -> BigDecimal,
+    override val toBase: (BigDecimal) -> BigDecimal
 ): MeasurementUnit {
     BASE(
         R.string.m2,

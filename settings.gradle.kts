@@ -10,7 +10,7 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
-    includeBuild("buildUtils")
+    //includeBuild("buildUtils")
 }
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"

@@ -47,178 +47,195 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import kotlinx.coroutines.awaitCancellation
 import hpl.apps.android.math.R
+import hpl.apps.android.math.ui.screens.converter.ConverterDisplayState
 import hpl.apps.android.math.ui.screens.converter.ConverterLocalizer
-import hpl.apps.android.math.ui.screens.converter.ConverterViewModel
 import hpl.apps.android.math.ui.screens.converter.units
 import hpl.apps.android.math.ui.screens.utils.copyToClipboard
 import hpl.apps.android.math.ui.theme.CalculatorShapes
 import hpl.apps.android.math.ui.theme.CalculatorTypography
 import hpl.apps.android.math.utils.Dimension
 import hpl.apps.android.math.utils.MeasurementUnit
+import kotlinx.coroutines.awaitCancellation
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ConverterDisplay(
     dimension: Dimension,
-    viewModel: ConverterViewModel,
+    state: ConverterDisplayState,
     localizer: ConverterLocalizer,
     setUnit1: (MeasurementUnit)->Unit,
     setUnit2: (MeasurementUnit)-> Unit,
     swap: ()-> Unit,
     modifier: Modifier = Modifier
 ){
-    Box(
-        contentAlignment = Alignment.Center,
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
-    ){
-        val localContext = LocalContext.current
-
-        val focusRequester = remember { FocusRequester() }
-
-        Column(modifier = Modifier.fillMaxSize()){
-            Column(
-                verticalArrangement = Arrangement.SpaceAround,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(
-                        width = dimensionResource(R.dimen.converter_display_field_border_width),
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    .padding(dimensionResource(R.dimen.converter_display_field_padding))
-                    .weight(1f)
-            ) {
-                UnitsList(
-                    selectedUnitId = viewModel.state.value.selectedUnit1.id,
-                    setUnit = { setUnit1(it) },
-                    dimension = dimension
+    ) {
+        Text(
+            text = stringResource(dimension.id),
+            style = MaterialTheme.typography.headlineMedium,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .padding(
+                    vertical = dimensionResource(R.dimen.heading_vert_padding),
+                    horizontal = dimensionResource(R.dimen.heading_horiz_padding)
                 )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
+        )
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        ) {
+            val localContext = LocalContext.current
+
+            val focusRequester = remember { FocusRequester() }
+
+            Column(modifier = Modifier.fillMaxSize()) {
+                Column(
+                    verticalArrangement = Arrangement.SpaceAround,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = dimensionResource(R.dimen.converter_input_field_padding))
+                        .border(
+                            width = dimensionResource(R.dimen.converter_display_field_border_width),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        .padding(dimensionResource(R.dimen.converter_display_field_padding))
+                        .weight(1f)
                 ) {
-                    InterceptPlatformTextInput(
-                        interceptor = { _, _ ->
-                            awaitCancellation()
-                        }
+                    UnitsList(
+                        selectedUnitId = state.selectedUnit1.id,
+                        setUnit = { setUnit1(it) },
+                        dimension = dimension
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = dimensionResource(R.dimen.converter_input_field_padding))
                     ) {
-                        val expression = if (!viewModel.state.value.expressionChanged) {
-                            localizer.cachedLocalizedExpression.ifEmpty {
+                        InterceptPlatformTextInput(
+                            interceptor = { _, _ ->
+                                awaitCancellation()
+                            }
+                        ) {
+                            val expression = if (!state.expressionChanged) {
+                                localizer.cachedLocalizedExpression.ifEmpty {
+                                    val localizedExpression = localizer.localizeExpression(
+                                        state.expression
+                                    )
+                                    localizer.cachedLocalizedExpression = localizedExpression
+                                    localizedExpression
+                                }
+                            } else {
                                 val localizedExpression = localizer.localizeExpression(
-                                    viewModel.state.value.expression
+                                    state.expression
                                 )
                                 localizer.cachedLocalizedExpression = localizedExpression
                                 localizedExpression
                             }
-                        } else {
-                            val localizedExpression = localizer.localizeExpression(
-                                viewModel.state.value.expression
-                            )
-                            localizer.cachedLocalizedExpression = localizedExpression
-                            localizedExpression
-                        }
 
-                        LaunchedEffect(Unit) { focusRequester.requestFocus() }
-                        BasicTextField(
-                            value = TextFieldValue(
-                                expression,
-                                TextRange(
-                                    localizer.findCursorPositionInLocalizedExpression(
-                                        expression,
-                                        viewModel.state.value.expression.length,
-                                        viewModel.state.value.cursorPosition
+                            LaunchedEffect(Unit) { focusRequester.requestFocus() }
+                            BasicTextField(
+                                value = TextFieldValue(
+                                    expression,
+                                    TextRange(
+                                        localizer.findCursorPositionInLocalizedExpression(
+                                            expression,
+                                            state.expression.length,
+                                            state.cursorPosition
+                                        )
                                     )
-                                )
-                            ),
-                            textStyle = CalculatorTypography.inputSmall.copy(color = MaterialTheme.colorScheme.onSurface),
-                            singleLine = true,
-                            onValueChange = {},
-                            cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
+                                ),
+                                textStyle = CalculatorTypography.inputSmall.copy(color = MaterialTheme.colorScheme.onSurface),
+                                singleLine = true,
+                                onValueChange = {},
+                                cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .focusRequester(focusRequester)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(dimensionResource(R.dimen.converter_input_field_horiz_padding)))
+                        Text(
+                            text = state.selectedUnit1.symbol,
+                            style = CalculatorTypography.inputSmall,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer,
+                            textAlign = TextAlign.Center,
                             modifier = Modifier
-                                .weight(1f)
-                                .focusRequester(focusRequester)
+                                .clip(MaterialTheme.shapes.small)
+                                .background(color = MaterialTheme.colorScheme.secondaryContainer)
+                                .padding(dimensionResource(R.dimen.converter_screen_unit_label_horiz_padding))
                         )
                     }
-                    Spacer(modifier = Modifier.width(dimensionResource(R.dimen.converter_input_field_horiz_padding)))
-                    Text(
-                        text = viewModel.state.value.selectedUnit1.symbol,
-                        style = CalculatorTypography.inputSmall,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .clip(MaterialTheme.shapes.small)
-                            .background(color = MaterialTheme.colorScheme.secondaryContainer)
-                            .padding(dimensionResource(R.dimen.converter_screen_unit_label_horiz_padding))
-                    )
                 }
-            }
-            Column(
-                verticalArrangement = Arrangement.SpaceAround,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(
-                        width = dimensionResource(R.dimen.converter_display_field_border_width),
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    .padding(dimensionResource(R.dimen.converter_display_field_padding))
-                    .weight(1f)
-            ) {
-                UnitsList(
-                    selectedUnitId = viewModel.state.value.selectedUnit2.id,
-                    setUnit = { setUnit2(it) },
-                    dimension = dimension
-                )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                Column(
+                    verticalArrangement = Arrangement.SpaceAround,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = dimensionResource(R.dimen.converter_input_field_padding))
+                        .border(
+                            width = dimensionResource(R.dimen.converter_display_field_border_width),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        .padding(dimensionResource(R.dimen.converter_display_field_padding))
+                        .weight(1f)
                 ) {
-                    val expression = localizer.localizeExpression(viewModel.state.value.result)
-                    Icon(
-                        Icons.Default.ContentCopy,
-                        contentDescription = stringResource(R.string.copy_text),
+                    UnitsList(
+                        selectedUnitId = state.selectedUnit2.id,
+                        setUnit = { setUnit2(it) },
+                        dimension = dimension
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .clip(MaterialTheme.shapes.small)
-                            .clickable{
-                                copyToClipboard(localContext, expression)
-                            }
-                            .padding(dimensionResource(R.dimen.icon_padding))
-                    )
-                    Spacer(modifier = Modifier.width(dimensionResource(R.dimen.converter_input_field_horiz_padding)))
-                    Text(
-                        text = expression,
-                        style = CalculatorTypography.inputSmall,
-                        maxLines = 1,
-                        overflow = TextOverflow.StartEllipsis,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Spacer(modifier = Modifier.width(dimensionResource(R.dimen.converter_input_field_horiz_padding)))
-                    Text(
-                        text = viewModel.state.value.selectedUnit2.symbol,
-                        style = CalculatorTypography.inputSmall,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .clip(MaterialTheme.shapes.small)
-                            .background(color = MaterialTheme.colorScheme.secondaryContainer)
-                            .padding(dimensionResource(R.dimen.converter_screen_unit_label_horiz_padding))
-                    )
+                            .fillMaxWidth()
+                            .padding(vertical = dimensionResource(R.dimen.converter_input_field_padding))
+                    ) {
+                        val expression = localizer.localizeExpression(state.result)
+                        Icon(
+                            Icons.Default.ContentCopy,
+                            contentDescription = stringResource(R.string.copy_text),
+                            modifier = Modifier
+                                .clip(MaterialTheme.shapes.small)
+                                .clickable {
+                                    copyToClipboard(localContext, expression)
+                                }
+                                .padding(dimensionResource(R.dimen.icon_padding))
+                        )
+                        Spacer(modifier = Modifier.width(dimensionResource(R.dimen.converter_input_field_horiz_padding)))
+                        Text(
+                            text = expression,
+                            style = CalculatorTypography.inputSmall,
+                            maxLines = 1,
+                            overflow = TextOverflow.StartEllipsis,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Spacer(modifier = Modifier.width(dimensionResource(R.dimen.converter_input_field_horiz_padding)))
+                        Text(
+                            text = state.selectedUnit2.symbol,
+                            style = CalculatorTypography.inputSmall,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .clip(MaterialTheme.shapes.small)
+                                .background(color = MaterialTheme.colorScheme.secondaryContainer)
+                                .padding(dimensionResource(R.dimen.converter_screen_unit_label_horiz_padding))
+                        )
+                    }
                 }
             }
+            Icon(
+                Icons.Filled.SwapVerticalCircle,
+                contentDescription = stringResource(R.string.swap),
+                modifier = Modifier
+                    .size(dimensionResource(R.dimen.swap_icon_size))
+                    .clip(CalculatorShapes.round)
+                    .background(color = MaterialTheme.colorScheme.background)
+                    .clickable { swap() }
+            )
         }
-        Icon(
-            Icons.Filled.SwapVerticalCircle,
-            contentDescription = stringResource(R.string.swap),
-            modifier = Modifier
-                .size(dimensionResource(R.dimen.swap_icon_size))
-                .clip(CalculatorShapes.round)
-                .background(color = MaterialTheme.colorScheme.background)
-                .clickable{ swap() }
-        )
     }
 }
 

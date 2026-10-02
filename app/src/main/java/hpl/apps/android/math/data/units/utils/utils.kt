@@ -1,6 +1,7 @@
 package hpl.apps.android.math.data.units.utils
 
 import hpl.apps.android.math.data.KevalType
+import java.math.BigDecimal
 
 
 /* Time */
@@ -144,20 +145,20 @@ val tiB = multiply(D1024, giB)
 
 
 
-fun celsiusToFahrenheit(celsius: Double): Double{
+fun celsiusToFahrenheit(celsius: BigDecimal): BigDecimal{
     return add(multiply(celsius, D1_8), D32)
 }
 
-fun fahrenheitToCelsius(fahrenheit: Double): Double{
+fun fahrenheitToCelsius(fahrenheit: BigDecimal): BigDecimal{
     return divide(subtract(fahrenheit, D32), D1_8)
 }
 
-fun celsiusToRankine(celsius: Double): Double{
+fun celsiusToRankine(celsius: BigDecimal): BigDecimal{
     return multiply(subtract(celsius, abs_zero), D1_8)
 
 }
 
-fun rankineToCelsius(rankine: Double): Double{
+fun rankineToCelsius(rankine: BigDecimal): BigDecimal{
     return add(divide(rankine, D1_8), abs_zero)
 }
 
@@ -165,20 +166,20 @@ fun rankineToCelsius(rankine: Double): Double{
 
 
 
-fun divide(x: Double, y: Double): Double{
+fun divide(x: BigDecimal, y: BigDecimal): BigDecimal{
     return KevalType.divide(x, y)
 }
 
-fun multiply(x: Double, y: Double): Double{
+fun multiply(x: BigDecimal, y: BigDecimal): BigDecimal{
     return KevalType.multiply(x, y)
 }
 
-fun add(x: Double, y: Double): Double{
+fun add(x: BigDecimal, y: BigDecimal): BigDecimal{
     return KevalType.add(x, y)
 }
 
-fun subtract(x: Double, y: Double): Double{
+fun subtract(x: BigDecimal, y: BigDecimal): BigDecimal{
     return KevalType.subtract(x, y)
 }
 
-fun pi(): Double = KevalType.pi()
+fun pi(): BigDecimal = KevalType.pi()

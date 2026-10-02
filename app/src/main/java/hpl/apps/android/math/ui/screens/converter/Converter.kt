@@ -7,19 +7,16 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.os.ConfigurationCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -27,7 +24,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import hpl.apps.android.math.R
 import hpl.apps.android.math.ui.components.button.MathButtonClass
 import hpl.apps.android.math.ui.screens.converter.components.ConverterDisplay
 import hpl.apps.android.math.ui.screens.converter.components.ConverterKeyPad
@@ -45,7 +41,7 @@ private enum class ConverterDestinations(val screenName: String){
 @Composable
 fun Converter(
     modifier: Modifier = Modifier,
-    viewModel: ConverterViewModel = viewModel(),
+    viewModel: ConverterViewModel = viewModel(factory = ConverterViewModel.Factory),
     navController: NavHostController = rememberNavController()
 ){
     NavHost(
@@ -65,19 +61,22 @@ fun Converter(
             )
         }
         composable(route = ConverterDestinations.MAIN.screenName) {
+            val context = LocalContext.current
+            val state by viewModel.state.collectAsState()
             ConverterScreen(
                 viewModel.selectedDimension,
-                viewModel,
+                state,
                 clickHandler = {
                     viewModel.handleClick(
                         it,
-                        viewModel.state.value.selectedUnit1,
-                        viewModel.state.value.selectedUnit2
+                        state.selectedUnit1,
+                        state.selectedUnit2,
+                        context
                     )
                 },
-                setUnit1 = viewModel::setUnit1,
-                setUnit2 = viewModel::setUnit2,
-                swap = viewModel::handleSwap,
+                setUnit1 = { viewModel.setUnit1(it, context) },
+                setUnit2 = { viewModel.setUnit2(it, context) },
+                swap = { viewModel.handleSwap(context) },
                 modifier = Modifier.fillMaxSize()
             )
         }
@@ -88,7 +87,7 @@ fun Converter(
 @Composable
 private fun ConverterScreen(
     dimension: Dimension,
-    viewModel: ConverterViewModel,
+    state: ConverterDisplayState,
     clickHandler: (MathButtonClass) -> Unit,
     setUnit1: (MeasurementUnit) -> Unit,
     setUnit2: (MeasurementUnit) -> Unit,
@@ -99,16 +98,6 @@ private fun ConverterScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
-        Text(
-            text = stringResource(dimension.id),
-            style = MaterialTheme.typography.headlineMedium,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .padding(
-                vertical = dimensionResource(R.dimen.heading_vert_padding),
-                horizontal = dimensionResource(R.dimen.heading_horiz_padding)
-            )
-        )
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
             val localConfiguration = LocalConfiguration.current
             val orientation = remember(localConfiguration){ localConfiguration.orientation }
@@ -132,7 +121,7 @@ private fun ConverterScreen(
                     )
                     ConverterDisplay(
                         dimension = dimension,
-                        viewModel = viewModel,
+                        state = state,
                         localizer = localizer,
                         setUnit1 = setUnit1,
                         setUnit2 = setUnit2,
@@ -151,7 +140,7 @@ private fun ConverterScreen(
                 ) {
                     ConverterDisplay(
                         dimension = dimension,
-                        viewModel = viewModel,
+                        state = state,
                         localizer = localizer,
                         setUnit1 = setUnit1,
                         setUnit2 = setUnit2,

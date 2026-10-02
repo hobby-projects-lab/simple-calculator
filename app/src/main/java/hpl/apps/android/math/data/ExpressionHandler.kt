@@ -1,7 +1,8 @@
 package hpl.apps.android.math.data
 
 import hpl.apps.android.math.utils.MeasurementUnit
-import java.util.Locale
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 object ExpressionHandler {
     private const val ALLOWED_TRAILING_OPERATORS = "${Operator.ADD}"+
@@ -32,8 +33,7 @@ object ExpressionHandler {
         - Adding 1 as right operand for percent operator
         if a right operand is not present in order to allow expressions like 1+3%(7-2)
         - Replacing the scientific notation symbol with its value
-        - Preventing identifiers from having numbers by inserting multiplication sign
-        for expressions like PI3log to become PI*3*log
+        - Adding () to constants identifiers because they are actually functions
         */
 
         val l1 = processedExpression.length-1
@@ -60,8 +60,8 @@ object ExpressionHandler {
                         append(Expression.SCI_NOTATION_VALUE)
                         i++
                     }
-                    c.isLetter() &&(i<l1 && processedExpression[i+1].isDigit()) ->{
-                        append("${c}${Operator.MUL}")
+                    c.isLetter() &&(i == l1 || (!processedExpression[i+1].isLetter()&& processedExpression[i+1] != '(' && processedExpression[i+1] != '[')) ->{
+                        append("${c}()")
                         i++
                     }
                     else -> {
@@ -75,61 +75,71 @@ object ExpressionHandler {
         return processedExpression
     }
 
-    private fun processConverterExpression(expression: String): Double?{
+    private fun processConverterExpression(expression: String): BigDecimal?{
         val result = try {
-            expression.toDouble()
+            expression.toBigDecimal()
         }catch (_: Exception){
             null
         }
         return result
     }
 
-    fun evaluate(expression: String, degreeMode: Boolean): String?{
-        val processedExpression = process(expression)
+
+    private fun evaluateInternal(expression: String, precision: Int, degreeMode: Boolean): String?{
         val result = try {
             if(degreeMode) {
-                evaluator_degree_mode.eval(processedExpression)
+                evaluator_degree_mode.eval(expression)
             }else{
-                evaluator.eval(processedExpression)
+                evaluator.eval(expression)
             }
         }catch (_: Exception){
             return null
         }
-        return result.roundAndToString()
+        return result.clean(precision, KevalType.roundingMode)
+    }
+    fun evaluate(expression: String, precision: Int, degreeMode: Boolean): String?{
+        val processedExpression = process(expression)
+        return computation(
+            processedExpression,
+            precision
+        ) { evaluateInternal(it, precision, degreeMode) }
     }
 
-    fun convert(numberAsString: String, from: MeasurementUnit, to: MeasurementUnit): String?{
-        val number = processConverterExpression(numberAsString) ?: return null
+
+    private fun convertInternal(number: BigDecimal, precision: Int, from: MeasurementUnit, to: MeasurementUnit): String?{
         val result = try {
             to.fromBase(from.toBase(number))
         }catch (_: Exception){
             return null
         }
-        return result.roundAndToString()
+        return result.clean(precision, KevalType.roundingMode)
+    }
+    fun convert(numberAsString: String, precision: Int, from: MeasurementUnit, to: MeasurementUnit): String?{
+        val number = processConverterExpression(numberAsString) ?: return null
+        return computation(
+            number,
+            precision
+        ){ convertInternal(it, precision, from, to) }
     }
 
 }
 
 
-
-private const val POSITIVE_INFINITY = "∞"
-private const val NEGATIVE_INFINITY = "-∞"
-
-private const val TEN_TO_THE_10 = 1e10
-private const val NEGATIVE_TEN_TO_THE_10 = -1e10
-
-private fun Double.roundAndToString(): String {
-    return when {
-        this.isFinite() && this > NEGATIVE_TEN_TO_THE_10 && this < TEN_TO_THE_10 -> {
-            String
-                .format(Locale.ENGLISH, "%.10f", this)
-                .dropLastWhile { it == '0' }
-                .dropLastWhile { it == '.' }
+private fun <T> computation(input: T, precision: Int, compute: (T)-> String?): String?{
+    var internalPrecision = 2*precision+1
+    var r1: String
+    var r2: String
+    while (true){
+        KevalType.setMathContext(internalPrecision, KevalType.roundingMode)
+        r1 = compute(input)?: return null
+        KevalType.setMathContext(2*internalPrecision, KevalType.roundingMode)
+        r2 = compute(input)?: return null
+        if(r1 == r2){
+            return r1
         }
-        this == Double.POSITIVE_INFINITY -> POSITIVE_INFINITY
-        this == Double.NEGATIVE_INFINITY -> NEGATIVE_INFINITY
-        else -> {
-            this.toString()
-        }
+        internalPrecision *= 2
     }
 }
+
+private fun BigDecimal.clean(scale: Int, roundingMode: RoundingMode): String =
+    this.setScale(scale, roundingMode).stripTrailingZeros().toPlainString()

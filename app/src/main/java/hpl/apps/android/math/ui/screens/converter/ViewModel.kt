@@ -1,8 +1,16 @@
 package hpl.apps.android.math.ui.screens.converter
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
+import android.content.Context
+import androidx.core.content.ContextCompat.getString
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import hpl.apps.android.math.CalculatorApplication
+import hpl.apps.android.math.R
+import hpl.apps.android.math.data.UserPreferencesRepository
 import hpl.apps.android.math.ui.GetData
 import hpl.apps.android.math.ui.components.button.MathButtonClass
 import hpl.apps.android.math.ui.components.button.TextButtonClass
@@ -12,6 +20,13 @@ import hpl.apps.android.math.utils.MeasurementUnit
 import hpl.apps.android.math.utils.baseUnit2Index
 import hpl.apps.android.math.utils.baseUnitIndex
 import hpl.apps.android.math.utils.oops
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 data class ConverterDisplayState(
@@ -23,7 +38,10 @@ data class ConverterDisplayState(
     val result: String
 )
 
-class ConverterViewModel: ViewModel(){
+class ConverterViewModel(
+    private val userPreferencesRepository: UserPreferencesRepository,
+    private val defaultDispatcher: CoroutineDispatcher
+): ViewModel(){
     var selectedDimension = units.keys.first()
         private set
 
@@ -42,9 +60,9 @@ class ConverterViewModel: ViewModel(){
         return unitsForCurrentDimension[baseUnit2Index]!!
     }
 
-    private fun initializeState(): MutableState<ConverterDisplayState> {
+    private fun initializeState(): MutableStateFlow<ConverterDisplayState> {
         val unitsForCurrentDimension = getUnitsForCurrentDimension(selectedDimension)
-        return mutableStateOf(
+        return MutableStateFlow(
             ConverterDisplayState(
                 "",
                 0,
@@ -58,20 +76,36 @@ class ConverterViewModel: ViewModel(){
 
     val state = initializeState()
 
-    fun setUnit1(unit: MeasurementUnit){
-        state.value = state.value.copy(
-            selectedUnit1 = unit,
+    fun setUnit1(unit: MeasurementUnit, context: Context){
+        setLoadingState(
+            expression = state.value.expression,
+            cursorPosition = state.value.cursorPosition,
             expressionChanged = false,
-            result = convert(state.value.expression, unit, state.value.selectedUnit2)?: ""
+            selectedUnit1 = unit,
+            selectedUnit2 = state.value.selectedUnit2,
+            context = context
         )
+        startNewJob {
+            state.value = state.value.copy(
+                result = convert(state.value.expression, state.value.selectedUnit1, unit)?: ""
+            )
+        }
     }
 
-    fun setUnit2(unit: MeasurementUnit){
-        state.value = state.value.copy(
-            selectedUnit2 = unit,
+    fun setUnit2(unit: MeasurementUnit, context: Context){
+        setLoadingState(
+            expression = state.value.expression,
+            cursorPosition = state.value.cursorPosition,
             expressionChanged = false,
-            result = convert(state.value.expression, state.value.selectedUnit1, unit)?: ""
+            selectedUnit1 = state.value.selectedUnit1,
+            selectedUnit2 = unit,
+            context = context
         )
+        startNewJob {
+            state.value = state.value.copy(
+                result = convert(state.value.expression, state.value.selectedUnit1, unit)?: ""
+            )
+        }
     }
 
     private fun clearState(){
@@ -91,23 +125,35 @@ class ConverterViewModel: ViewModel(){
     }
 
     private val converterFunction = GetData.expressionHandler()::convert
-    private fun convert(numberAsString: String, from: MeasurementUnit, to: MeasurementUnit): String? =
-        converterFunction(numberAsString, from, to)
+    private suspend fun convert(numberAsString: String, from: MeasurementUnit, to: MeasurementUnit): String? =
+        withContext(defaultDispatcher) {
+            converterFunction(
+                numberAsString,
+                userPreferencesRepository.precision.first(),
+                from,
+                to
+            )
+        }
 
-    fun handleSwap(){
+    fun handleSwap(context: Context){
         val selectedUnit1 = state.value.selectedUnit2
         val selectedUnit2 = state.value.selectedUnit1
-        state.value = ConverterDisplayState(
-            state.value.result,
-            state.value.result.length,
-            true,
-            selectedUnit1,
-            selectedUnit2,
-            convert(state.value.result, selectedUnit1, selectedUnit2)?: ""
+        setLoadingState(
+            expression = state.value.result,
+            cursorPosition = state.value.result.length,
+            expressionChanged = true,
+            selectedUnit1 = selectedUnit1,
+            selectedUnit2 = selectedUnit2,
+            context = context
         )
+        startNewJob {
+            state.value = state.value.copy(
+                result = convert(state.value.expression, state.value.selectedUnit1, state.value.selectedUnit2)?: ""
+            )
+        }
     }
 
-    fun handleClick(button: MathButtonClass, from: MeasurementUnit, to: MeasurementUnit){
+    fun handleClick(button: MathButtonClass, from: MeasurementUnit, to: MeasurementUnit, context: Context){
         when(button){
             VectorButtonClass.BACKSPACE ->{
                 val minCursorPosition = if(state.value.expression.startsWith(TextButtonClass.SIGN.displayText?: TextButtonClass.SIGN.text)) 1 else 0
@@ -115,17 +161,23 @@ class ConverterViewModel: ViewModel(){
                     val newExpression = state.value.expression.removeRange(
                         state.value.cursorPosition - 1..<state.value.cursorPosition
                     )
-                    state.value = ConverterDisplayState(
-                        newExpression,
-                        state.value.cursorPosition-1,
-                        true,
-                        state.value.selectedUnit1,
-                        state.value.selectedUnit2,
-                        convert(newExpression, from, to)?: ""
+                    setLoadingState(
+                        expression = newExpression,
+                        cursorPosition = state.value.cursorPosition-1,
+                        expressionChanged = true,
+                        selectedUnit1 = state.value.selectedUnit1,
+                        selectedUnit2 = state.value.selectedUnit2,
+                        context = context
                     )
+                    startNewJob {
+                        state.value = state.value.copy(
+                            result = convert(newExpression, from, to)?: ""
+                        )
+                    }
                 }
             }
             TextButtonClass.CLEAR ->{
+                cancelJob()
                 clearState()
             }
             TextButtonClass.CURSOR_FORWARD ->{
@@ -170,12 +222,19 @@ class ConverterViewModel: ViewModel(){
                     newCursorPosition = state.value.cursorPosition+1
                     (TextButtonClass.SIGN.displayText?: TextButtonClass.SIGN.text)+state.value.expression
                 }
-                state.value = state.value.copy(
+                setLoadingState(
                     expression = newExpression,
                     cursorPosition = newCursorPosition,
                     expressionChanged = true,
-                    result = convert(newExpression, from, to)?: ""
+                    selectedUnit1 = state.value.selectedUnit1,
+                    selectedUnit2 = state.value.selectedUnit2,
+                    context = context
                 )
+                startNewJob {
+                    state.value = state.value.copy(
+                        result = convert(newExpression, from, to)?: ""
+                    )
+                }
             }
             else -> {
                 if(button is TextButtonClass){
@@ -183,15 +242,54 @@ class ConverterViewModel: ViewModel(){
                     val newExpression = state.value.expression.substring(0, state.value.cursorPosition)+
                             extraString+
                             state.value.expression.substring(state.value.cursorPosition)
-                    state.value = ConverterDisplayState(
-                        newExpression,
-                        state.value.cursorPosition+extraString.length,
-                        true,
-                        state.value.selectedUnit1,
-                        state.value.selectedUnit2,
-                        convert(newExpression, from, to)?: ""
+                    setLoadingState(
+                        expression = newExpression,
+                        cursorPosition = state.value.cursorPosition+extraString.length,
+                        expressionChanged = true,
+                        selectedUnit1 = state.value.selectedUnit1,
+                        selectedUnit2 = state.value.selectedUnit2,
+                        context = context
                     )
+                    startNewJob {
+                        state.value = state.value.copy(
+                            result = convert(newExpression, from, to)?: ""
+                        )
+                    }
                 }
+            }
+        }
+    }
+
+
+    private lateinit var job: Job
+    private fun cancelJob(){ if(this@ConverterViewModel::job.isInitialized) job.cancel() }
+    private fun startNewJob(callBack: suspend ()-> Unit){
+        cancelJob()
+        job = viewModelScope.launch{callBack()}
+    }
+    private fun setLoadingState(
+        expression: String,
+        cursorPosition: Int,
+        expressionChanged: Boolean,
+        selectedUnit1: MeasurementUnit,
+        selectedUnit2: MeasurementUnit,
+        context: Context
+    ){
+        state.value = ConverterDisplayState(
+            expression,
+            cursorPosition,
+            expressionChanged,
+            selectedUnit1,
+            selectedUnit2,
+            getString(context, R.string.computing)
+        )
+    }
+
+    companion object {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val application = (this[APPLICATION_KEY] as CalculatorApplication)
+                ConverterViewModel(application.userPreferencesRepository, Dispatchers.Default)
             }
         }
     }

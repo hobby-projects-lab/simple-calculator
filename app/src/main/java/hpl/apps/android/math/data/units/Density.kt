@@ -9,12 +9,13 @@ import hpl.apps.android.math.data.units.utils.lb_ft3
 import hpl.apps.android.math.data.units.utils.multiply
 import hpl.apps.android.math.data.units.utils.oz_in3
 import hpl.apps.android.math.utils.MeasurementUnit
+import java.math.BigDecimal
 
 enum class Density(
     @StringRes override val id: Int,
     override val symbol: String,
-    override val fromBase: (Double) -> Double,
-    override val toBase: (Double) -> Double
+    override val fromBase: (BigDecimal) -> BigDecimal,
+    override val toBase: (BigDecimal) -> BigDecimal
 ): MeasurementUnit {
     BASE(
         R.string.g_l,
