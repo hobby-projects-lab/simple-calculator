@@ -10,12 +10,13 @@ import hpl.apps.android.math.data.units.utils.fahrenheitToCelsius
 import hpl.apps.android.math.data.units.utils.rankineToCelsius
 import hpl.apps.android.math.data.units.utils.subtract
 import hpl.apps.android.math.utils.MeasurementUnit
+import java.math.BigDecimal
 
 enum class Temperature(
     @StringRes override val id: Int,
     override val symbol: String,
-    override val fromBase: (Double) -> Double,
-    override val toBase: (Double) -> Double
+    override val fromBase: (BigDecimal) -> BigDecimal,
+    override val toBase: (BigDecimal) -> BigDecimal
 ): MeasurementUnit {
     BASE(
         R.string.c,

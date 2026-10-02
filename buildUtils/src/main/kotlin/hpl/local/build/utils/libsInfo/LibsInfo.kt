@@ -25,7 +25,8 @@ internal fun applyBuildUtils(project: Project) {
         AllowedLicences.MIT.spdxId,
         AllowedLicences.GPL3.spdxId,
         AllowedLicences.GPL3PLUS.spdxId,
-        AllowedLicences.CC0.spdxId
+        AllowedLicences.CC0.spdxId,
+        AllowedLicences.BSD3.spdxId
     )
 
     baseExtension.library.duplicationMode.set(DuplicateMode.MERGE)

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SwapVerticalCircle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -26,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import hpl.apps.android.math.ui.screens.about.About
 import hpl.apps.android.math.ui.screens.calculator.Calculator
 import hpl.apps.android.math.ui.screens.converter.Converter
+import hpl.apps.android.math.ui.screens.settings.Settings
 import hpl.apps.android.math.utils.icons.CalculatorVector
 
 @Composable
@@ -64,6 +66,7 @@ fun CalculatorApp() {
                 ) {
                     when(destination){
                         AppDestinations.CONVERTER -> Converter(modifier = Modifier.fillMaxSize())
+                        AppDestinations.SETTINGS -> Settings(modifier = Modifier.fillMaxSize())
                         AppDestinations.ABOUT -> About(modifier = Modifier.fillMaxSize())
                         else -> Calculator(modifier = Modifier.fillMaxSize())
                     }
@@ -79,5 +82,6 @@ private enum class AppDestinations(
 ) {
     CALCULATOR(R.string.calculator, CalculatorVector),
     CONVERTER(R.string.converter, Icons.Filled.SwapVerticalCircle),
+    SETTINGS(R.string.settings, Icons.Filled.Settings),
     ABOUT(R.string.about, Icons.Filled.Info)
 }

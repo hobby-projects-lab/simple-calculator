@@ -18,6 +18,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -55,6 +57,8 @@ fun CalculatorDisplay(
 
     val focusRequester = remember { FocusRequester() }
 
+    val state by viewModel.inputState.collectAsState()
+
     Column(
         horizontalAlignment = Alignment.End,
         modifier = modifier
@@ -84,17 +88,17 @@ fun CalculatorDisplay(
                 .fillMaxWidth()
                 .padding(vertical = dimensionResource(R.dimen.calculator_input_field_vert_padding))
         ) {
-            val expression = if (!viewModel.inputState.value.expressionChanged) {
+            val expression = if (!state.expressionChanged) {
                 localizer.cachedLocalizedExpression.ifEmpty {
                     val localizedExpression = localizer.localizeExpression(
-                        viewModel.inputState.value.expression
+                        state.expression
                     )
                     localizer.cachedLocalizedExpression = localizedExpression
                     localizedExpression
                 }
             } else {
                 val localizedExpression = localizer.localizeExpression(
-                    viewModel.inputState.value.expression
+                    state.expression
                 )
                 localizer.cachedLocalizedExpression = localizedExpression
                 localizedExpression
@@ -125,8 +129,8 @@ fun CalculatorDisplay(
                         TextRange(
                             localizer.findCursorPositionInLocalizedExpression(
                                 expression,
-                                viewModel.inputState.value.expression.length,
-                                viewModel.inputState.value.cursorPosition
+                                state.expression.length,
+                                state.cursorPosition
                             )
                         )
                     ),
@@ -140,17 +144,17 @@ fun CalculatorDisplay(
                 )
             }
         }
-        val preview = if (!viewModel.inputState.value.previewChanged) {
+        val preview = if (!state.previewChanged) {
             localizer.cachedLocalizedPreview.ifEmpty {
                 val localizedPreview = localizer.localizeExpression(
-                    viewModel.inputState.value.preview
+                    state.preview
                 )
                 localizer.cachedLocalizedPreview = localizedPreview
                 localizedPreview
             }
         } else {
             val localizedPreview = localizer.localizeExpression(
-                viewModel.inputState.value.preview
+                state.preview
             )
             localizer.cachedLocalizedPreview = localizedPreview
             localizedPreview

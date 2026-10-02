@@ -128,7 +128,7 @@ private fun LicenceTypes(
             Text(
                 text = stringResource(it.id),
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable{ setDestination(it.screenName) }

@@ -5,11 +5,25 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.ContextCompat.getString
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import hpl.apps.android.math.CalculatorApplication
 import hpl.apps.android.math.R
+import hpl.apps.android.math.data.UserPreferencesRepository
 import hpl.apps.android.math.ui.GetData
 import hpl.apps.android.math.ui.components.button.MathButtonClass
 import hpl.apps.android.math.ui.components.button.TextButtonClass
 import hpl.apps.android.math.ui.components.button.VectorButtonClass
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 data class InputState(
     val expression: String,
@@ -31,8 +45,11 @@ class CalculatorKeyPadSwitch{
     fun switchOther(){ controller.intValue = other }
 }
 
-class CalculatorViewModel: ViewModel(){
-    val inputState = mutableStateOf(
+class CalculatorViewModel(
+    private val userPreferencesRepository: UserPreferencesRepository,
+    private val defaultDispatcher: CoroutineDispatcher
+): ViewModel(){
+    val inputState = MutableStateFlow(
         InputState(
             "",
             0,
@@ -134,8 +151,14 @@ class CalculatorViewModel: ViewModel(){
             }
         }
     }
-    private fun evaluateExpression(processedExpression: String, context: Context): String{
-        val result = evaluate(processedExpression, degreeMode.value)
+    private suspend fun evaluateExpression(processedExpression: String, context: Context): String{
+        val result = withContext(defaultDispatcher) {
+            evaluate(
+                processedExpression,
+                userPreferencesRepository.precision.first(),
+                degreeMode.value
+            )
+        }
         return result ?: getString(context, R.string.error)
     }
 
@@ -163,7 +186,7 @@ class CalculatorViewModel: ViewModel(){
         ']'
     )
     private val decimalRegex = Regex("${operators.SUB}?\\d+(\\.\\d*)?")
-    private fun previewResult(expression: String, context: Context): String?{
+    private suspend fun previewResult(expression: String, context: Context): String?{
         var unnecessary = expression.isEmpty() || expression.matches(decimalRegex)
         if(unnecessary) return null
         val processedExpression = processExpression(expression)
@@ -174,36 +197,48 @@ class CalculatorViewModel: ViewModel(){
     }
 
     fun setExpression(newExpression: String, context: Context){
-        inputState.value = InputState(
-            newExpression,
-            newExpression.length,
-            true,
-            previewResult(newExpression, context)?: "",
-            true
+        setLoadingState(
+            expression = newExpression,
+            cursorPosition = newExpression.length,
+            expressionChanged = true,
+            context = context
         )
+        startNewJob {
+            val preview = previewResult(newExpression, context)?: ""
+            inputState.value = inputState.value.copy(preview = preview)
+        }
     }
 
     fun handleClick(button: MathButtonClass, context: Context){
         when(button){
             TextButtonClass.EQUAL ->{
-                if(inputState.value.expression.isNotEmpty()) {
-                    val result = inputState.value.preview.ifEmpty {
-                        evaluateExpression(
-                            processExpression(inputState.value.expression),
-                            context
+                val stateDuringClick = inputState.value
+                setLoadingState(
+                    expression = "",
+                    cursorPosition = 0,
+                    expressionChanged = true,
+                    context = context
+                )
+                if(stateDuringClick.expression.isNotEmpty()){
+                    startNewJob {
+                        val result = if(stateDuringClick.preview.isEmpty() || stateDuringClick.preview == getString(context, R.string.computing)){
+                            evaluateExpression(
+                                processExpression(stateDuringClick.expression),
+                                context
+                            )
+                        }else{stateDuringClick.preview}
+                        if(result != getString(context, R.string.error)){
+                            history.add(HistoryItem(historySize.intValue+1, stateDuringClick.expression))
+                            historySize.intValue = history.size
+                        }
+                        inputState.value = InputState(
+                            result,
+                            result.length,
+                            true,
+                            "",
+                            true
                         )
                     }
-                    if(result != getString(context, R.string.error)){
-                        history.add(HistoryItem(historySize.intValue+1, inputState.value.expression))
-                        historySize.intValue = history.size
-                    }
-                    inputState.value = InputState(
-                        result,
-                        result.length,
-                        true,
-                        "",
-                        true
-                    )
                 }
             }
             VectorButtonClass.BACKSPACE ->{
@@ -211,16 +246,22 @@ class CalculatorViewModel: ViewModel(){
                     val newExpression = inputState.value.expression.removeRange(
                         inputState.value.cursorPosition - 1..<inputState.value.cursorPosition
                     )
-                    inputState.value = InputState(
-                        newExpression,
-                        inputState.value.cursorPosition-1,
-                        true,
-                        previewResult(newExpression, context)?: "",
-                        true
+                    val newCursorPosition = inputState.value.cursorPosition-1
+                    setLoadingState(
+                        expression = newExpression,
+                        cursorPosition = newCursorPosition,
+                        expressionChanged = true,
+                        context = context
                     )
+                    startNewJob {
+                        inputState.value = inputState.value.copy(
+                            preview = previewResult(newExpression, context)?: ""
+                        )
+                    }
                 }
             }
             TextButtonClass.CLEAR ->{
+                cancelJob()
                 inputState.value = InputState(
                     "",
                     0,
@@ -266,23 +307,33 @@ class CalculatorViewModel: ViewModel(){
             TextButtonClass.DEG ->{
                 degreeMode.value = !degreeMode.value
                 if(inputState.value.expression.isNotEmpty()) {
-                    val preview = previewResult(inputState.value.expression, context)
-                    inputState.value = inputState.value.copy(
+                    setLoadingState(
+                        expression = inputState.value.expression,
+                        cursorPosition = inputState.value.cursorPosition,
                         expressionChanged = false,
-                        preview = preview?: "",
-                        previewChanged = true
+                        context = context
                     )
+                    startNewJob {
+                        inputState.value = inputState.value.copy(
+                            preview = previewResult(inputState.value.expression, context)?: ""
+                        )
+                    }
                 }
             }
             TextButtonClass.RAD ->{
                 degreeMode.value = !degreeMode.value
                 if(inputState.value.expression.isNotEmpty()) {
-                    val preview = previewResult(inputState.value.expression, context)
-                    inputState.value = inputState.value.copy(
+                    setLoadingState(
+                        expression = inputState.value.expression,
+                        cursorPosition = inputState.value.cursorPosition,
                         expressionChanged = false,
-                        preview = preview?: "",
-                        previewChanged = true
+                        context = context
                     )
+                    startNewJob {
+                        inputState.value = inputState.value.copy(
+                            preview = previewResult(inputState.value.expression, context)?: ""
+                        )
+                    }
                 }
             }
             else -> {
@@ -291,13 +342,17 @@ class CalculatorViewModel: ViewModel(){
                     val newExpression = inputState.value.expression.substring(0, inputState.value.cursorPosition)+
                             extraString+
                             inputState.value.expression.substring(inputState.value.cursorPosition)
-                    inputState.value = InputState(
-                        newExpression,
-                        inputState.value.cursorPosition+extraString.length,
-                        true,
-                        previewResult(newExpression, context)?: "",
-                        previewChanged = true
+                    setLoadingState(
+                        expression = newExpression,
+                        cursorPosition = inputState.value.cursorPosition+extraString.length,
+                        expressionChanged = true,
+                        context = context
                     )
+                    startNewJob {
+                        inputState.value = inputState.value.copy(
+                            preview = previewResult(newExpression, context)?: ""
+                        )
+                    }
                 }
             }
         }
@@ -306,7 +361,38 @@ class CalculatorViewModel: ViewModel(){
     fun handleLongClick(button: MathButtonClass){
         when(button){
             TextButtonClass.CLEAR ->{
+                cancelJob()
                 clearAll()
+            }
+        }
+    }
+
+    private lateinit var job: Job
+    private fun cancelJob(){ if(this@CalculatorViewModel::job.isInitialized) job.cancel() }
+    private fun startNewJob(callBack: suspend ()-> Unit){
+        cancelJob()
+        job = viewModelScope.launch{callBack()}
+    }
+    private fun setLoadingState(
+        expression: String,
+        cursorPosition: Int,
+        expressionChanged: Boolean,
+        context: Context
+    ){
+        inputState.value = InputState(
+            expression,
+            cursorPosition,
+            expressionChanged,
+            getString(context, R.string.computing),
+            true
+        )
+    }
+
+    companion object {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val application = (this[APPLICATION_KEY] as CalculatorApplication)
+                CalculatorViewModel(application.userPreferencesRepository, Dispatchers.Default)
             }
         }
     }

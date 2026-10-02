@@ -1,32 +1,12 @@
 package hpl.apps.android.math.data
 
+import ch.obermuhlner.math.big.BigDecimalMath
 import com.notkamui.keval.Keval
 import com.notkamui.keval.KevalNumber
-import com.notkamui.keval.KevalNumbers
 import com.notkamui.keval.KevalOperator
-import hpl.apps.android.math.utils.oops
-import java.lang.StrictMath.toDegrees
-import java.lang.StrictMath.toRadians
-import kotlin.math.E
-import kotlin.math.PI
-import kotlin.math.abs
-import kotlin.math.acos
-import kotlin.math.acosh
-import kotlin.math.asin
-import kotlin.math.asinh
-import kotlin.math.atan
-import kotlin.math.atanh
-import kotlin.math.cos
-import kotlin.math.cosh
-import kotlin.math.floor
-import kotlin.math.ln
-import kotlin.math.log
-import kotlin.math.pow
-import kotlin.math.sin
-import kotlin.math.sinh
-import kotlin.math.sqrt
-import kotlin.math.tan
-import kotlin.math.tanh
+import java.math.BigDecimal
+import java.math.MathContext
+import java.math.RoundingMode
 
 object Operator{
     const val ADD = '+'
@@ -81,58 +61,69 @@ object Constant{// USE ONLY LETTERS FOR CONSTANTS NAMES
 
 
 
-object KevalType: KevalNumber<Double> {
-
-    const val NEG_ONE = -1.0
-    const val ONE = 1.0
-    const val TEN = 10.0
-    const val HUNDRED = 100.0
-
-    override fun isValidLiteral(token: String): Boolean = KevalNumbers.real.isValidLiteral(token)
-
-    override fun parseLiteral(token: String): Double = KevalNumbers.real.parseLiteral(token)
-
-    override fun defaultResources(): Map<String, KevalOperator<Double>> = mapOf()
-
-    fun pi(): Double = PI
-
-    fun e(): Double = E
-
-    override fun multiply(a: Double, b: Double): Double = a * b
-
-    fun add(a: Double, b: Double): Double = a + b
-
-    fun subtract(a: Double, b: Double): Double = a - b
-
-    fun divide(a: Double, b: Double): Double = a / b
-
-    fun factorial(a: Double): Double{
-        if (a < 0.0) oops("Factorial of a negative number.")
-        if (floor(a) != a) oops("Factorial of a non-integer.")
-        var result: Double
-        if(a > 170.0){
-            result = Double.POSITIVE_INFINITY
-        }else{
-            result = 1.0
-            var i = 2.0
-            while (i<=a){
-                result *= i
-                if(result.isInfinite()){
-                    break
-                }
-                i++
-            }
-        }
-        return result
+object KevalType: KevalNumber<BigDecimal> {
+    val roundingMode = RoundingMode.HALF_UP
+    private lateinit var context: MathContext
+    fun setMathContext(precision: Int, roundingMode: RoundingMode){
+        context = MathContext(precision, roundingMode)
     }
+    fun mathContext(): MathContext = if(this@KevalType::context.isInitialized) context else throw Error("KevalType.context not initialized.")
 
-    fun modulus(a: Double, b: Double): Double{
-        if (b == 0.0) oops("Division by 0.")
-        val result = a%b
-        return if(result<0.0) result+b else result
+    val NEG_ONE: BigDecimal = BigDecimal.valueOf(-1L, 0)
+    val ZERO: BigDecimal = BigDecimal.valueOf(0L, 0)
+    val ONE: BigDecimal = BigDecimal.valueOf(1L, 0)
+    val HUNDRED: BigDecimal = BigDecimal.valueOf(100L, 0)
+
+    override fun isValidLiteral(token: String): Boolean = try {
+        BigDecimal(token)
+        true
+    } catch (_: NumberFormatException) {
+        false
     }
+    override fun parseLiteral(token: String): BigDecimal = BigDecimal(token)
+    override fun defaultResources(): Map<String, KevalOperator<BigDecimal>> = mapOf()
 
-    fun power(a: Double, b: Double): Double = a.pow(b)
+    fun pi(): BigDecimal = BigDecimalMath.pi(mathContext())
+    fun e(): BigDecimal = BigDecimalMath.e(mathContext())
+
+    override fun multiply(a: BigDecimal, b: BigDecimal): BigDecimal = a.multiply(b, mathContext())
+
+    fun add(a: BigDecimal, b: BigDecimal): BigDecimal = a.add(b, mathContext())
+    fun subtract(a: BigDecimal, b: BigDecimal): BigDecimal = a.subtract(b, mathContext())
+
+    fun divide(a: BigDecimal, b: BigDecimal): BigDecimal = a.divide(b, mathContext())
+
+    fun toDegrees(a: BigDecimal): BigDecimal = BigDecimalMath.toDegrees(a, mathContext())
+    fun toRadians(a: BigDecimal): BigDecimal = BigDecimalMath.toRadians(a, mathContext())
+
+    fun factorial(a: BigDecimal): BigDecimal = BigDecimalMath.factorial(a, mathContext())
+    fun modulus(a: BigDecimal, b: BigDecimal): BigDecimal = a.remainder(b, mathContext())
+    fun power(a: BigDecimal, b: BigDecimal): BigDecimal = BigDecimalMath.pow(a, b, mathContext())
+    fun sqrt(a: BigDecimal): BigDecimal = BigDecimalMath.sqrt(a, mathContext())
+
+    fun log(a: BigDecimal, b: BigDecimal): BigDecimal =
+        BigDecimalMath.log(b, mathContext()).divide(BigDecimalMath.log(a, mathContext()), mathContext())
+    fun log10(a: BigDecimal): BigDecimal = BigDecimalMath.log10(a, mathContext())
+    fun ln(a: BigDecimal): BigDecimal = BigDecimalMath.log(a, mathContext())
+
+    fun cos(a: BigDecimal): BigDecimal = BigDecimalMath.cos(a, mathContext())
+    fun sin(a: BigDecimal): BigDecimal = BigDecimalMath.sin(a, mathContext())
+    fun tan(a: BigDecimal): BigDecimal = BigDecimalMath.tan(a, mathContext())
+
+    fun acos(a: BigDecimal): BigDecimal = BigDecimalMath.acos(a, mathContext())
+    fun asin(a: BigDecimal): BigDecimal = BigDecimalMath.asin(a, mathContext())
+    fun atan(a: BigDecimal): BigDecimal = BigDecimalMath.atan(a, mathContext())
+
+
+    fun cosh(a: BigDecimal): BigDecimal = BigDecimalMath.cosh(a, mathContext())
+    fun sinh(a: BigDecimal): BigDecimal = BigDecimalMath.sinh(a, mathContext())
+    fun tanh(a: BigDecimal): BigDecimal = BigDecimalMath.tanh(a, mathContext())
+
+    fun acosh(a: BigDecimal): BigDecimal = BigDecimalMath.acosh(a, mathContext())
+    fun asinh(a: BigDecimal): BigDecimal = BigDecimalMath.asinh(a, mathContext())
+    fun atanh(a: BigDecimal): BigDecimal = BigDecimalMath.atanh(a, mathContext())
+
+    fun abs(a: BigDecimal): BigDecimal = if(a >= ZERO) a else a.multiply(NEG_ONE, mathContext())
 
 }
 val evaluator = Keval.create(KevalType){
@@ -193,14 +184,14 @@ val evaluator = Keval.create(KevalType){
     unaryOperator {
         symbol = Operator.SQRT
         isPrefix = true
-        implementation = { a -> sqrt(a) }
+        implementation = { a -> KevalType.sqrt(a) }
     }
 
     binaryOperator {
         symbol = Operator.SQRT
         precedence = 3
         isLeftAssociative = false
-        implementation = { a, b -> KevalType.multiply(a, sqrt(b)) }
+        implementation = { a, b -> KevalType.multiply(a, KevalType.sqrt(b)) }
     }
 
     binaryOperator {
@@ -213,97 +204,97 @@ val evaluator = Keval.create(KevalType){
     function {
         name = MathFunction.LN
         arity = 1
-        implementation = { args -> ln(args[0]) }
+        implementation = { args -> KevalType.ln(args[0]) }
     }
 
     function {
         name = MathFunction.LOG
         arity = 1
-        implementation = { args -> log(args[0], KevalType.TEN) }
+        implementation = { args -> KevalType.log10(args[0]) }
     }
 
     function {
         name = MathFunction.LOG_X
         arity = 2
-        implementation = { args-> log(args[1], args[0]) }
+        implementation = { args-> KevalType.log(args[0], args[1]) }
     }
 
     function {
         name = MathFunction.COS
         arity = 1
-        implementation = { args -> cos(args[0]) }
+        implementation = { args -> KevalType.cos(args[0]) }
     }
 
     function {
         name = MathFunction.SIN
         arity = 1
-        implementation = { args -> sin(args[0]) }
+        implementation = { args -> KevalType.sin(args[0]) }
     }
 
     function {
         name = MathFunction.TAN
         arity = 1
-        implementation = { args -> tan(args[0]) }
+        implementation = { args -> KevalType.tan(args[0]) }
     }
 
     function {
         name = MathFunction.ARCCOS
         arity = 1
-        implementation = { args -> acos(args[0]) }
+        implementation = { args -> KevalType.acos(args[0]) }
     }
 
     function {
         name = MathFunction.ARCSIN
         arity = 1
-        implementation = { args -> asin(args[0]) }
+        implementation = { args -> KevalType.asin(args[0]) }
     }
 
     function {
         name = MathFunction.ARCTAN
         arity = 1
-        implementation = { args -> atan(args[0]) }
+        implementation = { args -> KevalType.atan(args[0]) }
     }
 
     function {
         name = MathFunction.COSH
         arity = 1
-        implementation = { args -> cosh(args[0]) }
+        implementation = { args -> KevalType.cosh(args[0]) }
     }
 
     function {
         name = MathFunction.SINH
         arity = 1
-        implementation = { args -> sinh(args[0]) }
+        implementation = { args -> KevalType.sinh(args[0]) }
     }
 
     function {
         name = MathFunction.TANH
         arity = 1
-        implementation = { args -> tanh(args[0]) }
+        implementation = { args -> KevalType.tanh(args[0]) }
     }
 
     function {
         name = MathFunction.ARCCOSH
         arity = 1
-        implementation = { args -> acosh(args[0]) }
+        implementation = { args -> KevalType.acosh(args[0]) }
     }
 
     function {
         name = MathFunction.ARCSINH
         arity = 1
-        implementation = { args -> asinh(args[0]) }
+        implementation = { args -> KevalType.asinh(args[0]) }
     }
 
     function {
         name = MathFunction.ARCTANH
         arity = 1
-        implementation = { args -> atanh(args[0]) }
+        implementation = { args -> KevalType.atanh(args[0]) }
     }
 
     function {
         name = MathFunction.ABS
         arity = 1
-        implementation = { args -> abs(args[0]) }
+        implementation = { args -> KevalType.abs(args[0]) }
     }
 
     function {
@@ -312,22 +303,24 @@ val evaluator = Keval.create(KevalType){
         implementation = { args -> KevalType.power(args[1], KevalType.divide(KevalType.ONE, args[0])) }
     }
 
-    constant {
+    function {
         name = Constant.PI
-        value = KevalType.pi()
+        arity = 0
+        implementation = { KevalType.pi() }
     }
 
-    constant {
+    function {
         name = Constant.E
-        value = KevalType.e()
+        arity = 0
+        implementation = { KevalType.e() }
     }
 
 }
 
 val evaluator_degree_mode = evaluator
-    .withFunction(MathFunction.COS, 1){ args -> cos(toRadians(args[0])) }
-    .withFunction(MathFunction.SIN, 1){ args -> sin(toRadians(args[0])) }
-    .withFunction(MathFunction.TAN, 1){ args -> tan(toRadians(args[0])) }
-    .withFunction(MathFunction.ARCCOS, 1){ args -> toDegrees(acos(args[0])) }
-    .withFunction(MathFunction.ARCSIN, 1){ args -> toDegrees(asin(args[0])) }
-    .withFunction(MathFunction.ARCTAN, 1){ args -> toDegrees(atan(args[0])) }
+    .withFunction(MathFunction.COS, 1){ args -> KevalType.cos(KevalType.toRadians(args[0])) }
+    .withFunction(MathFunction.SIN, 1){ args -> KevalType.sin(KevalType.toRadians(args[0])) }
+    .withFunction(MathFunction.TAN, 1){ args -> KevalType.tan(KevalType.toRadians(args[0])) }
+    .withFunction(MathFunction.ARCCOS, 1){ args -> KevalType.toDegrees(KevalType.acos(args[0])) }
+    .withFunction(MathFunction.ARCSIN, 1){ args -> KevalType.toDegrees(KevalType.asin(args[0])) }
+    .withFunction(MathFunction.ARCTAN, 1){ args -> KevalType.toDegrees(KevalType.atan(args[0])) }

@@ -25,7 +25,7 @@ import java.util.Locale
 @Composable
 fun Calculator(
     modifier: Modifier = Modifier,
-    calculatorViewModel: CalculatorViewModel = viewModel()
+    calculatorViewModel: CalculatorViewModel = viewModel(factory = CalculatorViewModel.Factory)
 ){
     val localContext = LocalContext.current
     CalculatorScreen(

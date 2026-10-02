@@ -11,7 +11,8 @@ internal enum class AllowedLicences(val spdxId: String){
     MIT("MIT"),
     GPL3("GPL-3.0-only"),
     GPL3PLUS("GPL-3.0-or-later"),
-    CC0("CC0-1.0")
+    CC0("CC0-1.0"),
+    BSD3("BSD-3-Clause")
 }
 
 internal val licencesWithSeparateNoticeFile = listOf(

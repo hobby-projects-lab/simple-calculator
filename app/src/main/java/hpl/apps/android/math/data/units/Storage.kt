@@ -22,12 +22,13 @@ import hpl.apps.android.math.data.units.utils.tB
 import hpl.apps.android.math.data.units.utils.tiB
 import hpl.apps.android.math.data.units.utils.tib
 import hpl.apps.android.math.utils.MeasurementUnit
+import java.math.BigDecimal
 
 enum class Storage(
     @StringRes override val id: Int,
     override val symbol: String,
-    override val fromBase: (Double) -> Double,
-    override val toBase: (Double) -> Double
+    override val fromBase: (BigDecimal) -> BigDecimal,
+    override val toBase: (BigDecimal) -> BigDecimal
 ): MeasurementUnit {
     BASE(
         R.string.bit,

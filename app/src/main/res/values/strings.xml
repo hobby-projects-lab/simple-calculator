@@ -10,6 +10,7 @@
     <string name="translate">Translate the app</string>
     <string name="calculator">Calculator</string>
     <string name="converter">Converter</string>
+    <string name="settings">Settings</string>
     <string name="about">About</string>
     <string name="third_party_licences">Third-party licences</string>
     <string name="fonts">Fonts</string>
@@ -24,6 +25,8 @@
     <string name="copied">Copied</string>
     <string name="backspace">Backspace</string>
     <string name="icons">Icons</string>
+    <string name="precision">Precision</string>
+    <string name="computing">Computing…</string>
 
     <!-- Dimensions -->
     <string name="length">Length</string>
