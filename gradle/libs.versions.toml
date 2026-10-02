@@ -43,4 +43,4 @@ androidx-datastore-preferences = { module = "androidx.datastore:datastore-prefer
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 aboutLibraries-plugin = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }
-build-utils = { id = "hpl.local.build.utils" }
+#build-utils = { id = "hpl.local.build.utils" }

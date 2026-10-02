@@ -1,27 +1,16 @@
-import hpl.local.build.utils.appInfo.AppInfo
-import hpl.local.build.utils.appInfo.BuildConfigFieldsData
-import hpl.local.build.utils.toLiteral
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
-    id(libs.plugins.build.utils.get().pluginId)
+    //id(libs.plugins.build.utils.get().pluginId)
 }
 
-tasks.withType<Zip> {
-    isPreserveFileTimestamps = false
-    isReproducibleFileOrder = true
+tasks.whenTaskAdded {
+    if (name.contains("ArtProfile")) {
+        enabled = false
+    }
 }
-tasks.withType<AbstractArchiveTask> {
-    isPreserveFileTimestamps = false
-    isReproducibleFileOrder = true
-}
-
-
-private val signingPass = System.getenv("SIMPLE_CALCULATOR_KEY_PASS")
-private val signingKeyPath = System.getenv("SIMPLE_CALCULATOR_KEY_STORE_PATH")
-private val signingKeyAlias = System.getenv("SIMPLE_CALCULATOR_KEY_ALIAS")
-private val isSigningConfig = ((signingPass != null)&&(signingKeyPath != null)&&(signingKeyAlias != null))
 
 android {
     namespace = AppInfo.ID
@@ -30,16 +19,6 @@ android {
     }
 
     defaultConfig {
-        if(isSigningConfig){
-            signingConfigs {
-                create(AppInfo.VARIANT_RELEASE) {
-                    storeFile = file(signingKeyPath)
-                    storePassword = signingPass
-                    keyAlias = signingKeyAlias
-                    keyPassword = signingPass
-                }
-            }
-        }
         applicationId = AppInfo.ID
         minSdk = AppInfo.MIN_SDK
         targetSdk = AppInfo.TARGET_SDK
@@ -51,35 +30,32 @@ android {
         buildConfigField(
             BuildConfigFieldsData.TYPE_STRING,
             BuildConfigFieldsData.SOURCE_CODE,
-            AppInfo.SOURCE_CODE.toLiteral()
+            "\"${AppInfo.SOURCE_CODE}\""
         )
         buildConfigField(
             BuildConfigFieldsData.TYPE_STRING,
             BuildConfigFieldsData.BUG_REPORT,
-            AppInfo.BUG_REPORT.toLiteral()
+            "\"${AppInfo.BUG_REPORT}\""
         )
         buildConfigField(
             BuildConfigFieldsData.TYPE_STRING,
             BuildConfigFieldsData.DONATE,
-            AppInfo.DONATE.toLiteral()
+            "\"${AppInfo.DONATE}\""
         )
         buildConfigField(
             BuildConfigFieldsData.TYPE_STRING,
             BuildConfigFieldsData.TRANSLATE,
-            AppInfo.TRANSLATE.toLiteral()
+            "\"${AppInfo.TRANSLATE}\""
         )
         buildConfigField(
             BuildConfigFieldsData.TYPE_STRING,
             BuildConfigFieldsData.LICENCE_TEXT,
-            AppInfo.getLicenceText(project).toLiteral()
+            "\"\"\"\n${AppInfo.getLicenceText(project)}\"\"\""
         )
     }
 
     buildTypes {
         release {
-            if(isSigningConfig){
-                signingConfig = signingConfigs.getByName(AppInfo.VARIANT_RELEASE)
-            }
             vcsInfo.include = false
             isMinifyEnabled = true
             isShrinkResources = true
@@ -94,13 +70,23 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
         compose = true
         buildConfig = true
     }
+}
+
+java {
+    toolchain{
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+kotlin {
+    compilerOptions { jvmTarget = JvmTarget.JVM_17 }
 }
 
 
@@ -127,4 +113,40 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling.preview)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+}
+
+
+object AppInfo {
+    const val ID = "hpl.apps.android.math"
+    const val ID_DEBUG_SUFFIX = ".debug"
+    const val VERSION_NAME = "1.1.0"
+    const val VERSION_CODE = 2
+
+    const val PROJECT_LICENCE_FILE_NAME = "LICENSE"
+
+    const val SOURCE_CODE = "https://cutt.ly/vylapd7n"
+    const val BUG_REPORT = "https://cutt.ly/MylaoDeH"
+    const val DONATE = "https://cutt.ly/QysgjZJ6"
+    const val TRANSLATE = "https://cutt.ly/uyjCGQlq"
+    fun getLicenceText(project: Project): String = project
+        .rootDir
+        .resolve(PROJECT_LICENCE_FILE_NAME)
+        .bufferedReader()
+        .use{ it.readText() }
+
+    const val COMPILE_SDK = 37
+    const val TARGET_SDK = 37
+    const val MIN_SDK = 24
+
+    const val TEST_RUNNER_CLASS = "androidx.test.runner.AndroidJUnitRunner"
+
+}
+
+object BuildConfigFieldsData{
+    const val SOURCE_CODE = "SOURCE_CODE"
+    const val BUG_REPORT = "BUG_REPORT"
+    const val DONATE = "DONATE"
+    const val TRANSLATE = "TRANSLATE"
+    const val LICENCE_TEXT = "LICENCE_TEXT"
+    const val TYPE_STRING = "String"
 }
