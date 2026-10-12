@@ -1,0 +1,38 @@
+name: Feature request
+description: Suggest a feature for this app
+labels: [ "feature request", "enhancement" ]
+body:
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "Required"
+      description: "Please read and check all the required boxes below before describing your suggested feature."
+      options:
+        - label: "I haven't found an open or closed issue about this feature."
+          required: true
+        - label: "This issue contains only one feature request."
+          required: true
+        - label: "I understand that this issue will be closed if I don't fill in all the required fields in this form."
+          required: true
+
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: "Feature description"
+      placeholder: "Describe your feature here."
+    validations:
+      required: true
+
+  - type: textarea
+    id: why-this-feature
+    attributes:
+      label: "Why this feature?"
+      placeholder: "Explain here what this feature would fix or improve in the app."
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-information
+    attributes:
+      label: "Additional information"
+      placeholder: "Add additional information about the feature request here if there is any."
