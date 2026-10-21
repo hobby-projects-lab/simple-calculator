@@ -38,13 +38,13 @@ enum class Force(
     BASE2(
         R.string.lbf,
         "lbf",
-        { divide(it, lbf) },
-        { multiply(it, lbf) }
+        { divide(it, lbf()) },
+        { multiply(it, lbf()) }
     ),
     OZF(
         R.string.ozf,
         "ozf",
-        { divide(it, ozf) },
-        { multiply(it, ozf) }
+        { divide(it, ozf()) },
+        { multiply(it, ozf()) }
     )
 }

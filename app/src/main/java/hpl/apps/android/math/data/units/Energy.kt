@@ -57,8 +57,8 @@ enum class Energy(
     KCAL(
         R.string.kcal,
         "kcal",
-        { divide(it, kcal) },
-        { multiply(it, kcal) }
+        { divide(it, kcal()) },
+        { multiply(it, kcal()) }
     ),
     WH(
         R.string.wh,

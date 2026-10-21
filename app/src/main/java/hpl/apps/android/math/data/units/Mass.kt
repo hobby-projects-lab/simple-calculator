@@ -50,13 +50,13 @@ enum class Mass(
     LB(
         R.string.lb,
         "lb",
-        { divide(it, lb) },
-        { multiply(it, lb) }
+        { divide(it, lb()) },
+        { multiply(it, lb()) }
     ),
     OZ(
         R.string.oz,
         "oz",
-        { divide(it, oz) },
-        { multiply(it, oz) }
+        { divide(it, oz()) },
+        { multiply(it, oz()) }
     )
 }

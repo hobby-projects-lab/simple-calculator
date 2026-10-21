@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import hpl.apps.android.math.R
 import hpl.apps.android.math.data.units.utils.abs_zero
 import hpl.apps.android.math.data.units.utils.add
+import hpl.apps.android.math.data.units.utils.celsiusToCelsius
 import hpl.apps.android.math.data.units.utils.celsiusToFahrenheit
 import hpl.apps.android.math.data.units.utils.celsiusToRankine
 import hpl.apps.android.math.data.units.utils.fahrenheitToCelsius
@@ -21,8 +22,8 @@ enum class Temperature(
     BASE(
         R.string.c,
         "°C",
-        {it},
-        {it}
+        { celsiusToCelsius(it) },
+        { celsiusToCelsius(it) }
     ),
     K(
         R.string.k,

@@ -61,14 +61,14 @@ enum class Pressure(
     TORR(
         R.string.torr,
         "Torr",
-        { divide(it, torr) },
-        { multiply(it, torr) }
+        { divide(it, torr()) },
+        { multiply(it, torr()) }
     ),
     PSI(
         R.string.psi,
         "psi",
-        { divide(it, psi) },
-        { multiply(it, psi) }
+        { divide(it, psi()) },
+        { multiply(it, psi()) }
     ),
     MMHG(
         R.string.mmhg,

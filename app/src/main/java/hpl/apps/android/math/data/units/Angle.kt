@@ -25,8 +25,8 @@ enum class Angle(
     BASE2(
         R.string.rad,
         "rad",
-        { divide(it, rad) },
-        { multiply(it, rad) }
+        { divide(it, rad()) },
+        { multiply(it, rad()) }
     ),
     GON(
         R.string.gon,

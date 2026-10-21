@@ -1,0 +1,6 @@
+* Handle expressions that blow to infinity like tan(π/2)
+* Update how to display error messages
+* Make precision dialog more user-friendly
+* Fix the bug with converter swap button
+* Throw an error if temperature conversion results into a value below absolute zero
+* Add other minor fixes that ensure accuracy in the converter
