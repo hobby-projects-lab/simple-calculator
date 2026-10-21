@@ -31,13 +31,13 @@ enum class Work(
     BASE2(
         R.string.lbft,
         "lbf·ft",
-        { divide(it, lbft) },
-        { multiply(it, lbft) }
+        { divide(it, lbft()) },
+        { multiply(it, lbft()) }
     ),
     OZIN(
         R.string.ozin,
         "oz·in",
-        { divide(it, ozin) },
-        { multiply(it, ozin) }
+        { divide(it, ozin()) },
+        { multiply(it, ozin()) }
     )
 }

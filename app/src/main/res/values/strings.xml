@@ -15,16 +15,25 @@
     <string name="fonts">Fonts</string>
     <string name="libraries">Libraries</string>
     <string name="ok">OK</string>
+    <string name="save">Save</string>
     <string name="app_icon">App\'s logo</string>
     <string name="app_licence">Licence</string>
     <string name="swap">Swap</string>
     <string name="error">Error</string>
+    <string name="result_too_large_error">Error: Value too large</string>
+    <string name="expression_with_too_large_values_error">Error: Expression contains too large values</string>
+    <string name="factorial_of_a_non_integer_error">Error: Factorial of a non-integer</string>
+    <string name="factorial_of_a_negative_number_error">Error: Factorial of a negative number</string>
+    <string name="temp_below_abs_zero_error">Error: Temperature below absolute zero</string>
+    <string name="app_limit_reached_error">Error: Calculator\'s limit reached</string>
     <string name="more_options">More options</string>
     <string name="copy_text">Copy text</string>
     <string name="copied">Copied</string>
     <string name="backspace">Backspace</string>
     <string name="icons">Icons</string>
     <string name="precision">Precision</string>
+    <string name="precision_constraints">Precision has to be an integer in the range [%1$d, %2$d]</string>
+    <string name="precision_description">Precision sets the maximum number of decimal places.</string>
     <string name="computing">Computing…</string>
 
     <!-- Dimensions -->

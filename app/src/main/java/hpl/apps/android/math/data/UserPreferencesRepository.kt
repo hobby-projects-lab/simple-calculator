@@ -10,14 +10,39 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 
 class UserPreferencesRepository(
     private val dataStore: DataStore<Preferences>
 ) {
-    private companion object {
-        val PRECISION = intPreferencesKey("precision")
-        const val DEFAULT_PRECISION = 20
+    companion object {
+        private val PRECISION = intPreferencesKey("precision")
+        private const val DEFAULT_PRECISION = 20
+        const val MAX_PRECISION = 100
+        const val MIN_PRECISION = 0
+
+        val roundingMode = RoundingMode.HALF_UP
+
+        private const val STEP = 100
+        private const val MIN_INTERNAL_PRECISION = MAX_PRECISION+STEP
+        const val MAX_INTERNAL_PRECISION = MIN_INTERNAL_PRECISION+9*STEP
+        private const val MAX_INTERNAL_PRECISION_MINUS_STEP = MAX_INTERNAL_PRECISION-STEP
+
+        private val MAX = BigDecimal.valueOf(1L, -STEP)
+        private val MIN = BigDecimal.valueOf(-1L, -STEP)
+
+        fun isInRange(value: BigDecimal): Boolean = value > MIN && value < MAX
+        val MAX_FACTORIAL_INPUT: BigDecimal = BigDecimal.valueOf(69L, 0)
+
+        fun getInternalPrecision(): Int = MIN_INTERNAL_PRECISION
+        fun increaseInternalPrecision(currentInternalPrecision: Int): Int{
+            return if(currentInternalPrecision <= MAX_INTERNAL_PRECISION_MINUS_STEP){
+                currentInternalPrecision+STEP
+            }else{MAX_INTERNAL_PRECISION}
+        }
+
     }
 
     val precision: Flow<Int> = dataStore.data

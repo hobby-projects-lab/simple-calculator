@@ -17,6 +17,9 @@ A simple all-in-one calculator and unit converter for Android.
 
 ## Key Features
 
+### Arbitrary Precision
+Calculate with the precision that suits you. No floating-point error.
+
 ### Scientific functions
 Perform trigonometric, logarithms, exponents, and roots functions with ease.
 The interface is designed for speed, allowing you to edit calculations on the fly and view history instantly.
@@ -25,14 +28,11 @@ The interface is designed for speed, allowing you to edit calculations on the fl
 Experience **_live conversion_** that updates results as you type. No need to press an "equals" button.
 With support for **_Metric_** and **_Imperial_** systems, you can effortlessly convert between units like kilometres to miles, Celsius to Fahrenheit, or kilograms to pounds.
 
-### Arbitrary Precision
-Calculate with as much accuracy as you want.
-
 ### Offline functionality
 Everything is offline.
 
 ### No Clutter, No Hassle
-Unlike bloated alternatives, our app focuses on what matters only. No permission, no ad, just **_speed and simplicity_**.
+Unlike bloated alternatives, our app focuses on what matters only. No permission, no ad, just **_speed, accuracy and simplicity_**.
 
 ---
 
