@@ -8,7 +8,7 @@ import hpl.apps.android.math.data.units.utils.THOUSAND
 import hpl.apps.android.math.data.units.utils.day
 import hpl.apps.android.math.data.units.utils.divide
 import hpl.apps.android.math.data.units.utils.h
-import hpl.apps.android.math.data.units.utils.leap_year
+import hpl.apps.android.math.data.units.utils.leapYear
 import hpl.apps.android.math.data.units.utils.min
 import hpl.apps.android.math.data.units.utils.multiply
 import hpl.apps.android.math.data.units.utils.week
@@ -61,25 +61,25 @@ enum class Time(
     D(
     R.string.d,
         "d",
-    { divide(it, day) },
-    { multiply(it, day) }
+    { divide(it, day()) },
+    { multiply(it, day()) }
     ),
     WK(
         R.string.wk,
         "wk",
-        { divide(it, week) },
-        { multiply(it, week) }
+        { divide(it, week()) },
+        { multiply(it, week()) }
     ),
     Y(
         R.string.yr,
         "yr",
-        { divide(it, year) },
-        { multiply(it, year) }
+        { divide(it, year()) },
+        { multiply(it, year()) }
     ),
     LEAP_Y(
         R.string.leap_yr,
         "leap yr",
-        { divide(it, leap_year) },
-        { multiply(it, leap_year) }
+        { divide(it, leapYear()) },
+        { multiply(it, leapYear()) }
     )
 }

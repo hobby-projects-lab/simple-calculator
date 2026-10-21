@@ -6,7 +6,7 @@ import hpl.apps.android.math.data.units.utils.BILLION
 import hpl.apps.android.math.data.units.utils.HUNDRED_THOUSAND
 import hpl.apps.android.math.data.units.utils.MILLION
 import hpl.apps.android.math.data.units.utils.THOUSAND
-import hpl.apps.android.math.data.units.utils.ac_ft
+import hpl.apps.android.math.data.units.utils.acFt
 import hpl.apps.android.math.data.units.utils.divide
 import hpl.apps.android.math.data.units.utils.ft3
 import hpl.apps.android.math.data.units.utils.in3
@@ -59,19 +59,19 @@ enum class Volume(
     AC_FT(
         R.string.ac_ft,
         "ac ft",
-        { divide(it, ac_ft) },
-        { multiply(it, ac_ft) }
+        { divide(it, acFt()) },
+        { multiply(it, acFt()) }
     ),
     FT3(
         R.string.ft3,
         "ft³",
-        { divide(it, ft3) },
-        { multiply(it, ft3) }
+        { divide(it, ft3()) },
+        { multiply(it, ft3()) }
     ),
     IN3(
         R.string.in3,
         "in³",
-        { divide(it, in3) },
-        { multiply(it, in3) }
+        { divide(it, in3()) },
+        { multiply(it, in3()) }
     )
 }

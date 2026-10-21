@@ -1,7 +1,9 @@
 package hpl.apps.android.math.data
 
 import hpl.apps.android.math.utils.MeasurementUnit
+import kotlinx.coroutines.currentCoroutineContext
 import java.math.BigDecimal
+import java.math.MathContext
 
 object ExpressionHandler {
     private const val ALLOWED_TRAILING_OPERATORS = "${Operator.ADD}"+
@@ -84,63 +86,63 @@ object ExpressionHandler {
     }
 
 
-    private fun evaluateInternal(expression: String, precision: Int, degreeMode: Boolean): String?{
-        val result = try {
-            if(degreeMode) {
-                evaluator_degree_mode.eval(expression)
-            }else{
-                evaluator.eval(expression)
+    suspend fun evaluate(expression: String, precision: Int, degreeMode: Boolean): String?{
+        val processedExpression = process(expression)
+        val result = try{
+            compute(precision) {
+                if(degreeMode) {
+                    evaluator_degree_mode.eval(processedExpression)
+                }else{
+                    evaluator.eval(processedExpression)
+                }
             }
         }catch (_: Exception){
-            return null
+            null
         }
-        return result.clean(precision)
-    }
-    fun evaluate(expression: String, precision: Int, degreeMode: Boolean): String?{
-        val processedExpression = process(expression)
-        return computation(
-            processedExpression,
-            precision
-        ) { evaluateInternal(it, precision, degreeMode) }
+        return result?.clean()
     }
 
 
-    private fun convertInternal(number: BigDecimal, precision: Int, from: MeasurementUnit, to: MeasurementUnit): String?{
-        val result = try {
-            to.fromBase(from.toBase(number))
-        }catch (_: Exception){
-            return null
-        }
-        return result.clean(precision)
-    }
-    fun convert(numberAsString: String, precision: Int, from: MeasurementUnit, to: MeasurementUnit): String?{
+    suspend fun convert(numberAsString: String, precision: Int, from: MeasurementUnit, to: MeasurementUnit): String?{
         val number = processConverterExpression(numberAsString) ?: return null
-        return computation(
-            number,
-            precision
-        ){ convertInternal(it, precision, from, to) }
-    }
-
-}
-
-
-private fun <T> computation(input: T, precision: Int, compute: (T)-> String?): String?{
-    var internalPrecision = 2*precision+10
-    var r1: String
-    var r2: String
-    while (true){
-        KevalType.setMathContext(internalPrecision, KevalType.roundingMode)
-        r1 = compute(input)?: return null
-        KevalType.setMathContext(2*internalPrecision, KevalType.roundingMode)
-        r2 = compute(input)?: return null
-        if(r1 == r2){
-            return r1
+        val result = try {
+            compute(precision) { to.fromBase(from.toBase(number)) }
+        }catch (_: Exception){
+            null
         }
-        internalPrecision *= 2
+        return result?.clean()
     }
+
 }
 
-private fun BigDecimal.clean(precision: Int): String =
-    this.setScale(precision, KevalType.roundingMode)
-        .stripTrailingZeros()
-        .toPlainString()
+private suspend fun compute(precision: Int, func: ()-> BigDecimal): BigDecimal{
+    KevalType.setCoroutineContext(currentCoroutineContext())
+
+    var internalPrecision1 = UserPreferencesRepository.getInternalPrecision()
+    var internalPrecision2: Int
+
+    KevalType.setMathContext(MathContext(internalPrecision1, UserPreferencesRepository.roundingMode))
+
+    var result1 = func().setScale(precision, UserPreferencesRepository.roundingMode)
+    var result2: BigDecimal
+    while (KevalType.isCoroutineContextActive()){
+        if(internalPrecision1 == UserPreferencesRepository.MAX_INTERNAL_PRECISION) CalculatorException.limitReached()
+        internalPrecision2 = UserPreferencesRepository.increaseInternalPrecision(internalPrecision1)
+        KevalType.setMathContext(MathContext(internalPrecision2, UserPreferencesRepository.roundingMode))
+
+        result2 = func().setScale(precision, UserPreferencesRepository.roundingMode)
+        if(result1 == result2) break
+        result1 = result2
+        internalPrecision1 = internalPrecision2
+    }
+    if(!UserPreferencesRepository.isInRange(result1)) CalculatorException.resultTooLarge()
+    return result1
+}
+
+
+private val cleanRange = BigDecimal.valueOf(-1L, -10)..BigDecimal.valueOf(1L, -10)
+private val cleanRange2 = BigDecimal.valueOf(-1L, 10)..BigDecimal.valueOf(1L, 10)
+private fun BigDecimal.clean(): String {
+    val x = this.stripTrailingZeros()
+    return if(x !in cleanRange || x in cleanRange2) x.toString() else x.toPlainString()
+}

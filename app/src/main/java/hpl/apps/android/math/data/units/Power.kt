@@ -45,13 +45,13 @@ enum class Power(
     HP(
         R.string.hp,
         "HP",
-        { divide(it, hp) },
-        { multiply(it, hp) }
+        { divide(it, hp()) },
+        { multiply(it, hp()) }
     ),
     BTUPH(
         R.string.btuph,
         "BTU/h",
-        { divide(it, btuph) },
-        { multiply(it, btuph) }
+        { divide(it, btuph()) },
+        { multiply(it, btuph()) }
     )
 }

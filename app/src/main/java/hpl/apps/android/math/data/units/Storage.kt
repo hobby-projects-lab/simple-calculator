@@ -57,14 +57,14 @@ enum class Storage(
     KB(
         R.string.kB,
         "kB",
-        { divide(it, kB) },
-        { multiply(it, kB) }
+        { divide(it, kB()) },
+        { multiply(it, kB()) }
     ),
     KIB(
         R.string.KiB,
         "KiB",
-        { divide(it, kiB) },
-        { multiply(it, kiB) }
+        { divide(it, kiB()) },
+        { multiply(it, kiB()) }
     ),
     MBIT(
         R.string.Mbit,
@@ -75,20 +75,20 @@ enum class Storage(
     MIBIT(
         R.string.Mibit,
         "Mibit",
-        { divide(it, mib) },
-        { multiply(it, mib) }
+        { divide(it, mib()) },
+        { multiply(it, mib()) }
     ),
     MB(
         R.string.MB,
         "MB",
-        { divide(it, mB) },
-        { multiply(it, mB) }
+        { divide(it, mB()) },
+        { multiply(it, mB()) }
     ),
     MIB(
         R.string.MiB,
         "MiB",
-        { divide(it, miB) },
-        { multiply(it, miB) }
+        { divide(it, miB()) },
+        { multiply(it, miB()) }
     ),
     GBIT(
         R.string.Gbit,
@@ -99,20 +99,20 @@ enum class Storage(
     GIBIT(
         R.string.Gibit,
         "Gibit",
-        { divide(it, gib) },
-        { multiply(it, gib) }
+        { divide(it, gib()) },
+        { multiply(it, gib()) }
     ),
     GB(
         R.string.GB,
         "GB",
-        { divide(it, gB) },
-        { multiply(it, gB) }
+        { divide(it, gB()) },
+        { multiply(it, gB()) }
     ),
     GIB(
         R.string.GiB,
         "GiB",
-        { divide(it, giB) },
-        { multiply(it, giB) }
+        { divide(it, giB()) },
+        { multiply(it, giB()) }
     ),
     TBIT(
         R.string.Tbit,
@@ -123,19 +123,19 @@ enum class Storage(
     TIBIT(
         R.string.Tibit,
         "Tibit",
-        { divide(it, tib) },
-        { multiply(it, tib) }
+        { divide(it, tib()) },
+        { multiply(it, tib()) }
     ),
     TB(
         R.string.TB,
         "TB",
-        { divide(it, tB) },
-        { multiply(it, tB) }
+        { divide(it, tB()) },
+        { multiply(it, tB()) }
     ),
     TIB(
         R.string.TiB,
         "TiB",
-        { divide(it, tiB) },
-        { multiply(it, tiB) }
+        { divide(it, tiB()) },
+        { multiply(it, tiB()) }
     )
 }

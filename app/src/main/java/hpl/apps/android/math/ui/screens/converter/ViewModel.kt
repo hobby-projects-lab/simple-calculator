@@ -87,7 +87,7 @@ class ConverterViewModel(
         )
         startNewJob {
             state.value = state.value.copy(
-                result = convert(state.value.expression, state.value.selectedUnit1, unit)?: ""
+                result = convert(state.value.expression, state.value.selectedUnit1, state.value.selectedUnit2, context)?: ""
             )
         }
     }
@@ -103,7 +103,7 @@ class ConverterViewModel(
         )
         startNewJob {
             state.value = state.value.copy(
-                result = convert(state.value.expression, state.value.selectedUnit1, unit)?: ""
+                result = convert(state.value.expression, state.value.selectedUnit1, state.value.selectedUnit2, context)?: ""
             )
         }
     }
@@ -125,15 +125,25 @@ class ConverterViewModel(
     }
 
     private val converterFunction = GetData.expressionHandler()::convert
-    private suspend fun convert(numberAsString: String, from: MeasurementUnit, to: MeasurementUnit): String? =
-        withContext(defaultDispatcher) {
-            converterFunction(
-                numberAsString,
-                userPreferencesRepository.precision.first(),
-                from,
-                to
-            )
+    private suspend fun convert(
+        numberAsString: String,
+        from: MeasurementUnit,
+        to: MeasurementUnit,
+        context: Context
+    ): String?{
+        val result = withContext(defaultDispatcher) {
+            if(numberAsString.matches(GetData.decimalRegex)) {
+                converterFunction(
+                    numberAsString,
+                    userPreferencesRepository.precision.first(),
+                    from,
+                    to
+                )
+            }else{ "" }
         }
+        if(result == null) GetData.errorMessage(context)
+        return result
+    }
 
     fun handleSwap(context: Context){
         val selectedUnit1 = state.value.selectedUnit2
@@ -148,7 +158,7 @@ class ConverterViewModel(
         )
         startNewJob {
             state.value = state.value.copy(
-                result = convert(state.value.expression, state.value.selectedUnit1, state.value.selectedUnit2)?: ""
+                result = convert(state.value.expression, state.value.selectedUnit1, state.value.selectedUnit2, context)?: ""
             )
         }
     }
@@ -171,7 +181,7 @@ class ConverterViewModel(
                     )
                     startNewJob {
                         state.value = state.value.copy(
-                            result = convert(newExpression, from, to)?: ""
+                            result = convert(newExpression, from, to, context)?: ""
                         )
                     }
                 }
@@ -232,7 +242,7 @@ class ConverterViewModel(
                 )
                 startNewJob {
                     state.value = state.value.copy(
-                        result = convert(newExpression, from, to)?: ""
+                        result = convert(newExpression, from, to, context)?: ""
                     )
                 }
             }
@@ -252,7 +262,7 @@ class ConverterViewModel(
                     )
                     startNewJob {
                         state.value = state.value.copy(
-                            result = convert(newExpression, from, to)?: ""
+                            result = convert(newExpression, from, to, context)?: ""
                         )
                     }
                 }

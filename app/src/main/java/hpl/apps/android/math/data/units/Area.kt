@@ -7,10 +7,10 @@ import hpl.apps.android.math.data.units.utils.TEN_THOUSAND
 import hpl.apps.android.math.data.units.utils.ac
 import hpl.apps.android.math.data.units.utils.divide
 import hpl.apps.android.math.data.units.utils.multiply
-import hpl.apps.android.math.data.units.utils.sq_ft
-import hpl.apps.android.math.data.units.utils.sq_in
-import hpl.apps.android.math.data.units.utils.sq_mi
-import hpl.apps.android.math.data.units.utils.sq_yd
+import hpl.apps.android.math.data.units.utils.sqFt
+import hpl.apps.android.math.data.units.utils.sqIn
+import hpl.apps.android.math.data.units.utils.sqMi
+import hpl.apps.android.math.data.units.utils.sqYd
 import hpl.apps.android.math.utils.MeasurementUnit
 import java.math.BigDecimal
 
@@ -47,26 +47,26 @@ enum class Area(
     MI2(
         R.string.mi2,
         "sq mi",
-        { divide(it, sq_mi) },
-        { multiply(it, sq_mi) }
+        { divide(it, sqMi()) },
+        { multiply(it, sqMi()) }
     ),
     YD2(
         R.string.yd2,
         "sq yd",
-        { divide(it, sq_yd) },
-        { multiply(it, sq_yd) }
+        { divide(it, sqYd()) },
+        { multiply(it, sqYd()) }
     ),
     FT2(
         R.string.ft2,
         "sq ft",
-        { divide(it, sq_ft) },
-        { multiply(it, sq_ft) }
+        { divide(it, sqFt()) },
+        { multiply(it, sqFt()) }
     ),
     IN2(
         R.string.in2,
         "sq in",
-        { divide(it, sq_in) },
-        { multiply(it, sq_in) }
+        { divide(it, sqIn()) },
+        { multiply(it, sqIn()) }
     ),
     HA(
         R.string.ha,
@@ -77,7 +77,7 @@ enum class Area(
     AC(
         R.string.ac,
         "ac",
-        { divide(it, ac) },
-        { multiply(it, ac) }
+        { divide(it, ac()) },
+        { multiply(it, ac()) }
     )
 }

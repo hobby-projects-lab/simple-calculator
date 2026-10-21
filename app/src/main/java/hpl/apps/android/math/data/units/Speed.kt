@@ -28,8 +28,8 @@ enum class Speed(
     BASE2(
     R.string.kmph,
         "km/h",
-    { divide(it, kmph) },
-    { multiply(it, kmph) }
+    { divide(it, kmph()) },
+    { multiply(it, kmph()) }
     ),
     KMPS(
         R.string.kmps,
@@ -40,8 +40,8 @@ enum class Speed(
     MPH(
         R.string.mph,
         "mi/h",
-        { divide(it, mph) },
-        { multiply(it, mph) }
+        { divide(it, mph()) },
+        { multiply(it, mph()) }
     ),
     FTPS(
     R.string.ftps,
@@ -52,8 +52,8 @@ enum class Speed(
     KN(
         R.string.kn,
         "kn",
-        { divide(it, knot) },
-        { multiply(it, knot) }
+        { divide(it, knot()) },
+        { multiply(it, knot()) }
     ),
     C(
         R.string.light_speed,

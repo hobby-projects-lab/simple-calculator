@@ -5,9 +5,9 @@ import hpl.apps.android.math.R
 import hpl.apps.android.math.data.units.utils.MILLION
 import hpl.apps.android.math.data.units.utils.THOUSAND
 import hpl.apps.android.math.data.units.utils.divide
-import hpl.apps.android.math.data.units.utils.lb_ft3
+import hpl.apps.android.math.data.units.utils.lbFt3
 import hpl.apps.android.math.data.units.utils.multiply
-import hpl.apps.android.math.data.units.utils.oz_in3
+import hpl.apps.android.math.data.units.utils.ozIn3
 import hpl.apps.android.math.utils.MeasurementUnit
 import java.math.BigDecimal
 
@@ -50,13 +50,13 @@ enum class Density(
     LB_FT3(
         R.string.lb_ft3,
         "lb/ft³",
-        { divide(it, lb_ft3) },
-        { multiply(it, lb_ft3) }
+        { divide(it, lbFt3()) },
+        { multiply(it, lbFt3()) }
     ),
     OZ_IN3(
         R.string.oz_in3,
         "oz/in³",
-        { divide(it, oz_in3) },
-        { multiply(it, oz_in3) }
+        { divide(it, ozIn3()) },
+        { multiply(it, ozIn3()) }
     )
 }

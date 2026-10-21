@@ -1,12 +1,16 @@
 package hpl.apps.android.math.data
 
+import androidx.annotation.StringRes
 import ch.obermuhlner.math.big.BigDecimalMath
 import com.notkamui.keval.Keval
 import com.notkamui.keval.KevalNumber
 import com.notkamui.keval.KevalOperator
+import hpl.apps.android.math.R
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.isActive
 import java.math.BigDecimal
 import java.math.MathContext
-import java.math.RoundingMode
+import kotlin.coroutines.CoroutineContext
 
 object Operator{
     const val ADD = '+'
@@ -60,20 +64,40 @@ object Constant{// USE ONLY LETTERS FOR CONSTANTS NAMES
 
 
 
+object CalculatorException{
+    @StringRes var id: Int = R.string.error
+        private set
 
-object KevalType: KevalNumber<BigDecimal> {
-    val roundingMode = RoundingMode.HALF_UP
-    private lateinit var context: MathContext
-    fun setMathContext(precision: Int, roundingMode: RoundingMode){
-        context = MathContext(precision, roundingMode)
+    private fun throwException(@StringRes value: Int){
+        id = value
+        throw Exception()
     }
-    fun mathContext(): MathContext = if(this@KevalType::context.isInitialized) context else throw Error("KevalType.context not initialized.")
 
-    val NEG_ONE: BigDecimal = BigDecimal.valueOf(-1L, 0)
-    val ZERO: BigDecimal = BigDecimal.valueOf(0L, 0)
-    val ONE: BigDecimal = BigDecimal.valueOf(1L, 0)
-    val HUNDRED: BigDecimal = BigDecimal.valueOf(100L, 0)
+    fun reset(){
+        id = R.string.error
+    }
+    fun resultTooLarge(){
+        throwException(R.string.result_too_large_error)
+    }
+    fun expressionWithTooLargeValues(){
+        throwException(R.string.expression_with_too_large_values_error)
+    }
+    fun factorialOfANonInteger(){
+        throwException(R.string.factorial_of_a_non_integer_error)
+    }
+    fun factorialOfANegativeNumber(){
+        throwException(R.string.factorial_of_a_negative_number_error)
+    }
 
+    fun tempBelowAbsZero(){
+        throwException(R.string.temp_below_abs_zero_error)
+    }
+
+    fun limitReached(){
+        throwException(R.string.app_limit_reached_error)
+    }
+}
+object KevalType: KevalNumber<BigDecimal> {
     override fun isValidLiteral(token: String): Boolean = try {
         BigDecimal(token)
         true
@@ -83,47 +107,76 @@ object KevalType: KevalNumber<BigDecimal> {
     override fun parseLiteral(token: String): BigDecimal = BigDecimal(token)
     override fun defaultResources(): Map<String, KevalOperator<BigDecimal>> = mapOf()
 
-    fun pi(): BigDecimal = BigDecimalMath.pi(mathContext())
-    fun e(): BigDecimal = BigDecimalMath.e(mathContext())
+    private lateinit var coroutineContext: CoroutineContext
+    private fun getCoroutineContext(): CoroutineContext = if(this@KevalType::coroutineContext.isInitialized) coroutineContext else throw Error("KevalType.coroutineContext not initialized.")
+    fun setCoroutineContext(value: CoroutineContext){ coroutineContext = value }
+    fun isCoroutineContextActive(): Boolean = getCoroutineContext().isActive
 
-    override fun multiply(a: BigDecimal, b: BigDecimal): BigDecimal = a.multiply(b, mathContext())
+    val NEG_ONE: BigDecimal = BigDecimal.valueOf(-1L, 0)
+    private val ZERO: BigDecimal = BigDecimal.valueOf(0L, 0)
+    val ONE: BigDecimal = BigDecimal.valueOf(1L, 0)
+    val HUNDRED: BigDecimal = BigDecimal.valueOf(100L, 0)
 
-    fun add(a: BigDecimal, b: BigDecimal): BigDecimal = a.add(b, mathContext())
-    fun subtract(a: BigDecimal, b: BigDecimal): BigDecimal = a.subtract(b, mathContext())
+    private lateinit var mathContext: MathContext
+    private fun getMathContext(): MathContext = if(this@KevalType::mathContext.isInitialized) mathContext else throw Error("KevalType.mathContext not initialized.")
+    fun setMathContext(value: MathContext){ mathContext = value }
 
-    fun divide(a: BigDecimal, b: BigDecimal): BigDecimal = a.divide(b, mathContext())
+    fun compute(values: List<BigDecimal>, func: (List<BigDecimal>)-> BigDecimal): BigDecimal{
+        getCoroutineContext().ensureActive()
+        for(i in values){
+            if (!UserPreferencesRepository.isInRange(i)) CalculatorException.expressionWithTooLargeValues()
+        }
+        val result = func(values)
+        if(!UserPreferencesRepository.isInRange(result)) CalculatorException.expressionWithTooLargeValues()
+        return result
+    }
 
-    fun toDegrees(a: BigDecimal): BigDecimal = BigDecimalMath.toDegrees(a, mathContext())
-    fun toRadians(a: BigDecimal): BigDecimal = BigDecimalMath.toRadians(a, mathContext())
+    fun pi(): BigDecimal = BigDecimalMath.pi(getMathContext())
+    fun e(): BigDecimal = BigDecimalMath.e(getMathContext())
 
-    fun factorial(a: BigDecimal): BigDecimal = BigDecimalMath.factorial(a, mathContext())
-    fun modulus(a: BigDecimal, b: BigDecimal): BigDecimal = a.remainder(b, mathContext())
-    fun power(a: BigDecimal, b: BigDecimal): BigDecimal = BigDecimalMath.pow(a, b, mathContext())
-    fun sqrt(a: BigDecimal): BigDecimal = BigDecimalMath.sqrt(a, mathContext())
+    override fun multiply(a: BigDecimal, b: BigDecimal): BigDecimal = compute(listOf(a, b)){ it[0].multiply(it[1], getMathContext()) }
+    fun add(a: BigDecimal, b: BigDecimal): BigDecimal = compute(listOf(a, b)){ it[0].add(it[1], getMathContext()) }
+    fun subtract(a: BigDecimal, b: BigDecimal): BigDecimal = compute(listOf(a, b)){ it[0].subtract(it[1], getMathContext()) }
+    fun divide(a: BigDecimal, b: BigDecimal): BigDecimal = compute(listOf(a, b)){ it[0].divide(it[1], getMathContext()) }
+    fun identity(a: BigDecimal): BigDecimal = compute(listOf(a)){ it[0] }
 
-    fun log(a: BigDecimal, b: BigDecimal): BigDecimal =
-        BigDecimalMath.log(b, mathContext()).divide(BigDecimalMath.log(a, mathContext()), mathContext())
-    fun log10(a: BigDecimal): BigDecimal = BigDecimalMath.log10(a, mathContext())
-    fun ln(a: BigDecimal): BigDecimal = BigDecimalMath.log(a, mathContext())
+    fun toDegrees(a: BigDecimal): BigDecimal = compute(listOf(a)){ BigDecimalMath.toDegrees(it[0], getMathContext()) }
+    fun toRadians(a: BigDecimal): BigDecimal = compute(listOf(a)){ BigDecimalMath.toRadians(it[0], getMathContext()) }
 
-    fun cos(a: BigDecimal): BigDecimal = BigDecimalMath.cos(a, mathContext())
-    fun sin(a: BigDecimal): BigDecimal = BigDecimalMath.sin(a, mathContext())
-    fun tan(a: BigDecimal): BigDecimal = BigDecimalMath.tan(a, mathContext())
+    fun factorial(a: BigDecimal): BigDecimal = compute(listOf(a)){
+        if(it[0] > UserPreferencesRepository.MAX_FACTORIAL_INPUT) CalculatorException.expressionWithTooLargeValues()
+        if(it[0].toBigInteger().toBigDecimal().compareTo(it[0]) != 0) CalculatorException.factorialOfANonInteger()
+        if(it[0] < ZERO) CalculatorException.factorialOfANegativeNumber()
+        BigDecimalMath.factorial(it[0], getMathContext())
+    }
+    fun modulus(a: BigDecimal, b: BigDecimal): BigDecimal = compute(listOf(a, b)) { it[0].remainder(it[1], getMathContext()) }
+    fun power(a: BigDecimal, b: BigDecimal): BigDecimal = compute(listOf(a, b)){ BigDecimalMath.pow(it[0], it[1], getMathContext()) }
+    fun sqrt(a: BigDecimal): BigDecimal = compute(listOf(a)){ BigDecimalMath.sqrt(it[0], getMathContext()) }
 
-    fun acos(a: BigDecimal): BigDecimal = BigDecimalMath.acos(a, mathContext())
-    fun asin(a: BigDecimal): BigDecimal = BigDecimalMath.asin(a, mathContext())
-    fun atan(a: BigDecimal): BigDecimal = BigDecimalMath.atan(a, mathContext())
+    fun log(a: BigDecimal, b: BigDecimal): BigDecimal = compute(listOf(a, b)){
+        BigDecimalMath.log(it[1], getMathContext()).divide(BigDecimalMath.log(it[0], getMathContext()), getMathContext())
+    }
+    fun log10(a: BigDecimal): BigDecimal = compute(listOf(a)){ BigDecimalMath.log10(it[0], getMathContext()) }
+    fun ln(a: BigDecimal): BigDecimal = compute(listOf(a)){ BigDecimalMath.log(it[0], getMathContext()) }
+
+    fun cos(a: BigDecimal): BigDecimal = compute(listOf(a)){ BigDecimalMath.cos(it[0], getMathContext()) }
+    fun sin(a: BigDecimal): BigDecimal = compute(listOf(a)){ BigDecimalMath.sin(it[0], getMathContext()) }
+    fun tan(a: BigDecimal): BigDecimal = compute(listOf(a)){ BigDecimalMath.tan(it[0], getMathContext()) }
+
+    fun acos(a: BigDecimal): BigDecimal = compute(listOf(a)){ BigDecimalMath.acos(it[0], getMathContext()) }
+    fun asin(a: BigDecimal): BigDecimal = compute(listOf(a)){ BigDecimalMath.asin(it[0], getMathContext()) }
+    fun atan(a: BigDecimal): BigDecimal = compute(listOf(a)){ BigDecimalMath.atan(it[0], getMathContext()) }
 
 
-    fun cosh(a: BigDecimal): BigDecimal = BigDecimalMath.cosh(a, mathContext())
-    fun sinh(a: BigDecimal): BigDecimal = BigDecimalMath.sinh(a, mathContext())
-    fun tanh(a: BigDecimal): BigDecimal = BigDecimalMath.tanh(a, mathContext())
+    fun cosh(a: BigDecimal): BigDecimal = compute(listOf(a)){ BigDecimalMath.cosh(it[0], getMathContext()) }
+    fun sinh(a: BigDecimal): BigDecimal = compute(listOf(a)){ BigDecimalMath.sinh(it[0], getMathContext()) }
+    fun tanh(a: BigDecimal): BigDecimal = compute(listOf(a)){ BigDecimalMath.tanh(it[0], getMathContext()) }
 
-    fun acosh(a: BigDecimal): BigDecimal = BigDecimalMath.acosh(a, mathContext())
-    fun asinh(a: BigDecimal): BigDecimal = BigDecimalMath.asinh(a, mathContext())
-    fun atanh(a: BigDecimal): BigDecimal = BigDecimalMath.atanh(a, mathContext())
+    fun acosh(a: BigDecimal): BigDecimal = compute(listOf(a)){ BigDecimalMath.acosh(it[0], getMathContext()) }
+    fun asinh(a: BigDecimal): BigDecimal = compute(listOf(a)){ BigDecimalMath.asinh(it[0], getMathContext()) }
+    fun atanh(a: BigDecimal): BigDecimal = compute(listOf(a)){ BigDecimalMath.atanh(it[0], getMathContext()) }
 
-    fun abs(a: BigDecimal): BigDecimal = if(a >= ZERO) a else a.multiply(NEG_ONE, mathContext())
+    fun abs(a: BigDecimal): BigDecimal = compute(listOf(a)){ if(it[0] >= ZERO) it[0] else it[0].multiply(NEG_ONE) }
 
 }
 val evaluator = Keval.create(KevalType){
@@ -131,7 +184,7 @@ val evaluator = Keval.create(KevalType){
     unaryOperator {
         symbol = Operator.ADD
         isPrefix = true
-        implementation = {a-> a}
+        implementation = {a-> KevalType.identity(a) }
     }
 
     binaryOperator {
@@ -305,13 +358,11 @@ val evaluator = Keval.create(KevalType){
 
     function {
         name = Constant.PI
-        arity = 0
         implementation = { KevalType.pi() }
     }
 
     function {
         name = Constant.E
-        arity = 0
         implementation = { KevalType.e() }
     }
 

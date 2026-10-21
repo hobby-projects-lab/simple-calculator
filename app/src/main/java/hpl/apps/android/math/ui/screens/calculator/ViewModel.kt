@@ -67,6 +67,7 @@ class CalculatorViewModel(
     val history = mutableListOf<HistoryItem>()
 
     private val evaluate = GetData.expressionHandler()::evaluate
+    private val errorMessage = GetData::errorMessage
     private val operators = GetData.operators()
     private val constants = GetData.constants()
     private val functions = GetData.functions()
@@ -151,16 +152,13 @@ class CalculatorViewModel(
             }
         }
     }
-    private suspend fun evaluateExpression(processedExpression: String, context: Context): String{
-        val result = withContext(defaultDispatcher) {
+    private suspend fun evaluateExpression(processedExpression: String): String? = withContext(defaultDispatcher) {
             evaluate(
                 processedExpression,
                 userPreferencesRepository.precision.first(),
                 degreeMode.value
             )
         }
-        return result ?: getString(context, R.string.error)
-    }
 
     private val nonValidExpressionEndings = setOf(
         operators.MOD,
@@ -185,15 +183,14 @@ class CalculatorViewModel(
         ')',
         ']'
     )
-    private val decimalRegex = Regex("${operators.SUB}?\\d+(\\.\\d*)?")
-    private suspend fun previewResult(expression: String, context: Context): String?{
-        var unnecessary = expression.isEmpty() || expression.matches(decimalRegex)
+
+    private suspend fun previewResult(expression: String): String?{
+        var unnecessary = expression.isEmpty() || expression.matches(GetData.decimalRegex)
         if(unnecessary) return null
         val processedExpression = processExpression(expression)
         unnecessary = processedExpression.first() in nonValidExpressionBeginnings || processedExpression.last() in nonValidExpressionEndings
         if(unnecessary) return null
-        val result = evaluateExpression(processedExpression, context)
-        return result
+        return evaluateExpression(processedExpression)
     }
 
     fun setExpression(newExpression: String, context: Context){
@@ -204,7 +201,7 @@ class CalculatorViewModel(
             context = context
         )
         startNewJob {
-            val preview = previewResult(newExpression, context)?: ""
+            val preview = previewResult(newExpression)?: ""
             inputState.value = inputState.value.copy(preview = preview)
         }
     }
@@ -213,31 +210,38 @@ class CalculatorViewModel(
         when(button){
             TextButtonClass.EQUAL ->{
                 val stateDuringClick = inputState.value
-                setLoadingState(
-                    expression = "",
-                    cursorPosition = 0,
-                    expressionChanged = true,
-                    context = context
-                )
                 if(stateDuringClick.expression.isNotEmpty()){
+                    setLoadingState(
+                        expression = "",
+                        cursorPosition = 0,
+                        expressionChanged = true,
+                        context = context
+                    )
                     startNewJob {
                         val result = if(stateDuringClick.preview.isEmpty() || stateDuringClick.preview == getString(context, R.string.computing)){
-                            evaluateExpression(
-                                processExpression(stateDuringClick.expression),
-                                context
-                            )
+                            evaluateExpression(processExpression(stateDuringClick.expression))
                         }else{stateDuringClick.preview}
-                        if(result != getString(context, R.string.error)){
+                        if(result != null){
                             history.add(HistoryItem(historySize.intValue+1, stateDuringClick.expression))
                             historySize.intValue = history.size
+                            inputState.value = InputState(
+                                result,
+                                result.length,
+                                true,
+                                "",
+                                true
+                            )
+                        }else{
+                            errorMessage(context)
+                            inputState.value = InputState(
+                                stateDuringClick.expression,
+                                stateDuringClick.cursorPosition,
+                                true,
+                                "",
+                                true
+                            )
                         }
-                        inputState.value = InputState(
-                            result,
-                            result.length,
-                            true,
-                            "",
-                            true
-                        )
+
                     }
                 }
             }
@@ -255,7 +259,7 @@ class CalculatorViewModel(
                     )
                     startNewJob {
                         inputState.value = inputState.value.copy(
-                            preview = previewResult(newExpression, context)?: ""
+                            preview = previewResult(newExpression)?: ""
                         )
                     }
                 }
@@ -315,7 +319,7 @@ class CalculatorViewModel(
                     )
                     startNewJob {
                         inputState.value = inputState.value.copy(
-                            preview = previewResult(inputState.value.expression, context)?: ""
+                            preview = previewResult(inputState.value.expression)?: ""
                         )
                     }
                 }
@@ -331,7 +335,7 @@ class CalculatorViewModel(
                     )
                     startNewJob {
                         inputState.value = inputState.value.copy(
-                            preview = previewResult(inputState.value.expression, context)?: ""
+                            preview = previewResult(inputState.value.expression)?: ""
                         )
                     }
                 }
@@ -350,7 +354,7 @@ class CalculatorViewModel(
                     )
                     startNewJob {
                         inputState.value = inputState.value.copy(
-                            preview = previewResult(newExpression, context)?: ""
+                            preview = previewResult(newExpression)?: ""
                         )
                     }
                 }

@@ -17,4 +17,3 @@ fastlane/*
 !fastlane/**/*.txt
 !fastlane/**/*.png
 
-/signingConfig

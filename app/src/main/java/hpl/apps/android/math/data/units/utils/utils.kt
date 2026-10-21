@@ -1,165 +1,184 @@
 package hpl.apps.android.math.data.units.utils
 
+import hpl.apps.android.math.data.CalculatorException
 import hpl.apps.android.math.data.KevalType
 import java.math.BigDecimal
 
 
 /* Time */
 
-//day in second
-val day = multiply(D24, h)
+//day in seconds
+fun day(): BigDecimal = multiply(D24, h)
 
-//week in second
-val week = multiply(D7, day)
+//week in seconds
+fun week(): BigDecimal = multiply(D7, day())
 
 //year in seconds
-val year = multiply(D365, day)
+fun year(): BigDecimal = multiply(D365, day())
 //leap year in seconds
-val leap_year = multiply(D366, day)
+fun leapYear(): BigDecimal = multiply(D366, day())
 
 
 
 /* Angle */
 //radian in degree
-val rad = divide(D180, pi())
+fun rad(): BigDecimal = divide(D180, KevalType.pi())
 
 
 
 /* Energy */
 //kilocalorie in joule
-val kcal = multiply(cal, THOUSAND)
+fun kcal(): BigDecimal = multiply(cal, THOUSAND)
 
 
 
 /* Mass */
 //pound in gram
-val lb = multiply(D0_45359237, THOUSAND)
+fun lb(): BigDecimal = multiply(D0_45359237, THOUSAND)
 
 //ounce in gram
-val oz = divide(lb, D16)
+fun oz(): BigDecimal = divide(lb(), D16)
 
 
 
 /* Speed */
 //km/h in m/s
-val kmph = divide(THOUSAND, h)
+fun kmph(): BigDecimal = divide(THOUSAND, h)
 
 //knot in m/s
-val knot = divide(multiply(D1_852, THOUSAND), D3600)
+fun knot(): BigDecimal = divide(multiply(D1_852, THOUSAND), D3600)
 
 //mile per hour in m/s
-val mph = divide(mi, D3600)
+fun mph(): BigDecimal = divide(mi, D3600)
 
 
 
 /* Area */
 // square yard in m²
-val sq_yd = multiply(yd, yd)
+fun sqYd(): BigDecimal = multiply(yd, yd)
 
 //square mile in m²
-val sq_mi = multiply(mi, mi)
+fun sqMi(): BigDecimal = multiply(mi, mi)
 
 //square foot in m²
-val sq_ft = multiply(ft, ft)
+fun sqFt(): BigDecimal = multiply(ft, ft)
 
 //square inch in m²
-val sq_in = multiply(inch, inch)
+fun sqIn(): BigDecimal = multiply(inch, inch)
 
 //acre in m²
-val ac = multiply(D4840, sq_yd)
+fun ac(): BigDecimal = multiply(D4840, sqYd())
 
 
 
 /* Volume */
 //cubic foot in cubic metre
-val ft3 = multiply(ft, sq_ft)
+fun ft3(): BigDecimal = multiply(ft, sqFt())
 
 //cubic inch in cubic metre
-val in3 = multiply(inch, sq_in)
+fun in3(): BigDecimal = multiply(inch, sqIn())
 
 //acre foot in cubic metre
-val ac_ft = multiply(ac, ft)
+fun acFt(): BigDecimal = multiply(ac(), ft)
 
 
 
 /* Density */
 //pound per cubic foot in g/l
-val lb_ft3 = divide(lb, multiply(ft3, THOUSAND))
+fun lbFt3(): BigDecimal = divide(lb(), multiply(ft3(), THOUSAND))
 
 //pound per cubic foot in g/l
-val oz_in3 = divide(oz, multiply(in3, THOUSAND))
+fun ozIn3(): BigDecimal = divide(oz(), multiply(in3(), THOUSAND))
 
 
 
 /* Force */
 //pound-force in newton
-val lbf = multiply(divide(lb, THOUSAND), g)
-val ozf = divide(lbf, D16)
+fun lbf(): BigDecimal = multiply(divide(lb(), THOUSAND), g)
+fun ozf(): BigDecimal = divide(lbf(), D16)
 
 
 
 /* Work */
 //pound foot in N m
-val lbft = multiply(lbf, ft)
+fun lbft(): BigDecimal = multiply(lbf(), ft)
 
 //ounce inch in N m
-val ozin = multiply(ozf, inch)
+fun ozin(): BigDecimal = multiply(ozf(), inch)
 
 
 
 /* Power */
 //horsepower in watt
-val hp = divide(multiply(D33E3, lbft), min)
+fun hp(): BigDecimal = divide(multiply(D33E3, lbft()), min)
 
 //BTU/h in watt
-val btuph = divide(btu, h)
+fun btuph(): BigDecimal = divide(btu, h)
 
 
 
 /* Pressure */
 
 //torr in pascal
-val torr = divide(atm, D760)
+fun torr(): BigDecimal = divide(atm, D760)
 
 //pound per square inch in pascal
-val psi = divide(lbf, sq_in)
+fun psi(): BigDecimal = divide(lbf(), sqIn())
 
 
 
 /* Storage in bit*/
-val mib = multiply(D1024, kib)
-val gib = multiply(D1024, mib)
-val tib = multiply(D1024, gib)
+fun mib(): BigDecimal = multiply(D1024, kib)
+fun gib(): BigDecimal = multiply(D1024, mib())
+fun tib(): BigDecimal = multiply(D1024, gib())
 
-val kB = multiply(THOUSAND, b)
-val kiB = multiply(D1024, b)
+fun kB(): BigDecimal = multiply(THOUSAND, b)
+fun kiB(): BigDecimal = multiply(D1024, b)
 
-val mB = multiply(THOUSAND, kB)
-val miB = multiply(D1024, kiB)
+fun mB(): BigDecimal = multiply(THOUSAND, kB())
+fun miB(): BigDecimal = multiply(D1024, kiB())
 
-val gB = multiply(THOUSAND, mB)
-val giB = multiply(D1024, miB)
+fun gB(): BigDecimal = multiply(THOUSAND, mB())
+fun giB(): BigDecimal = multiply(D1024, miB())
 
-val tB = multiply(THOUSAND, gB)
-val tiB = multiply(D1024, giB)
+fun tB(): BigDecimal = multiply(THOUSAND, gB())
+fun tiB(): BigDecimal = multiply(D1024, giB())
 
 
 
 fun celsiusToFahrenheit(celsius: BigDecimal): BigDecimal{
-    return add(multiply(celsius, D1_8), D32)
+    return fromCelsius(celsius){ add(multiply(it, D1_8), D32) }
 }
 
 fun fahrenheitToCelsius(fahrenheit: BigDecimal): BigDecimal{
-    return divide(subtract(fahrenheit, D32), D1_8)
+    return toCelsius(fahrenheit){ divide(subtract(it, D32), D1_8) }
 }
 
 fun celsiusToRankine(celsius: BigDecimal): BigDecimal{
-    return multiply(subtract(celsius, abs_zero), D1_8)
+    return fromCelsius(celsius){ multiply(subtract(it, abs_zero), D1_8) }
 
 }
 
 fun rankineToCelsius(rankine: BigDecimal): BigDecimal{
-    return add(divide(rankine, D1_8), abs_zero)
+    return toCelsius(rankine){ add(divide(it, D1_8), abs_zero) }
+}
+
+fun celsiusToCelsius(celsius: BigDecimal): BigDecimal{
+    return fromCelsius(celsius){it}
+}
+
+private fun fromCelsius(celsius: BigDecimal, func: (BigDecimal)-> BigDecimal): BigDecimal{
+    return KevalType.compute(listOf(celsius)){
+        if(it[0] < abs_zero) CalculatorException.tempBelowAbsZero()
+        func(it[0])
+    }
+}
+private fun toCelsius(from: BigDecimal, func: (BigDecimal)-> BigDecimal): BigDecimal{
+    return KevalType.compute(listOf(from)){
+        val x = func(it[0])
+        if(x < abs_zero) CalculatorException.tempBelowAbsZero()
+        x
+    }
 }
 
 
@@ -181,5 +200,3 @@ fun add(x: BigDecimal, y: BigDecimal): BigDecimal{
 fun subtract(x: BigDecimal, y: BigDecimal): BigDecimal{
     return KevalType.subtract(x, y)
 }
-
-fun pi(): BigDecimal = KevalType.pi()
