@@ -6,6 +6,14 @@ A simple all-in-one calculator and unit converter for Android.
 <img alt="Logo" src="fastlane/metadata/android/en-US/images/icon.png" width="20%" />
 </div>
 <br>
+<div align="center">
+ <a href="https://f-droid.org/packages/hpl.apps.android.math">
+   <image alt="F-Droid logo" src="https://f-droid.org/badge/get-it-on.png" width="30%" />
+ </a>
+ <a href="https://github.com/hobby-projects-lab/simple-calculator/releases/latest">
+   <image alt="GitHub logo" src="https://i.ibb.co/q0mdc4Z/get-it-on-github.png" width="30%" />
+ </a>
+</div>
 <br>
 <div align="center">
     <img alt="Screenshot 1" src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" width="30%" />
