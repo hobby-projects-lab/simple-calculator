@@ -80,6 +80,12 @@ android {
         )
     }
 
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
+
     buildTypes {
         release {
             vcsInfo.include = false
