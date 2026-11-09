@@ -40,6 +40,7 @@
     <string name="length">Length</string>
     <string name="time">Time</string>
     <string name="speed">Speed</string>
+    <string name="acceleration">Acceleration</string>
     <string name="mass">Mass</string>
     <string name="area">Area</string>
     <string name="volume">Volume</string>
@@ -91,6 +92,18 @@
     <string name="ftps">Foot per second</string>
     <string name="kn">Knot</string>
     <string name="light_speed">Speed of light</string>
+
+
+    <string name="mps_squared">Metre per second squared</string>
+    <string name="g_force">g-force</string>
+    <string name="kmphps">Kilometre per hour per second</string>
+    <string name="kmps_squared">Kilometre per second squared</string>
+    <string name="ftps_squared">Foot per second squared</string>
+    <string name="mphps">Mile per hour per second</string>
+    <string name="knps">Knot per second</string>
+    <string name="gal">Gal</string>
+    <string name="mgal">Milligal</string>
+    <string name="ugal">Microgal</string>
 
 
     <string name="g">Gram</string>

@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Compress
 import androidx.compose.material.icons.filled.ElectricBolt
 import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.RocketLaunch
 import androidx.compose.material.icons.filled.Scale
 import androidx.compose.material.icons.filled.SdStorage
 import androidx.compose.material.icons.filled.Speed
@@ -24,6 +25,7 @@ enum class DimensionItem(
     LENGTH(R.string.length, IconCollection.Ruler.icon.vector),
     TIME(R.string.time, Icons.Default.AccessTime),
     SPEED(R.string.speed, Icons.Default.Speed),
+    ACCELERATION(R.string.acceleration, Icons.Default.RocketLaunch),
     MASS(R.string.mass, Icons.Filled.Scale),
     AREA(R.string.area, Icons.Filled.Square),
     VOLUME(R.string.volume, IconCollection.Cubes.icon.vector),
@@ -43,6 +45,7 @@ val dimensionUnitsMap:  Map<Dimension, Map<String, MeasurementUnit>> = mapOf(
     DimensionItem.LENGTH to Length.entries.associateBy { it.name },
     DimensionItem.TIME to Time.entries.associateBy { it.name },
     DimensionItem.SPEED to Speed.entries.associateBy { it.name },
+    DimensionItem.ACCELERATION to Acceleration.entries.associateBy { it.name },
     DimensionItem.MASS to Mass.entries.associateBy { it.name },
     DimensionItem.AREA to Area.entries.associateBy { it.name },
     DimensionItem.VOLUME to Volume.entries.associateBy { it.name },
