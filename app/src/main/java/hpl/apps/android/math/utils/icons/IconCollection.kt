@@ -4,6 +4,7 @@ import hpl.apps.android.math.utils.icons.collection.IconClass
 import hpl.apps.android.math.utils.icons.collection.bootStrapSoundWave
 import hpl.apps.android.math.utils.icons.collection.fontAwesomeCubes
 import hpl.apps.android.math.utils.icons.collection.fontAwesomeHammer
+import hpl.apps.android.math.utils.icons.collection.lightBlock
 import hpl.apps.android.math.utils.icons.collection.materialIconsGrain
 import hpl.apps.android.math.utils.icons.collection.materialSymbolsCreditCardHeart
 import hpl.apps.android.math.utils.icons.collection.tablerAngle
@@ -19,5 +20,6 @@ enum class IconCollection (val icon: IconClass){
     Crane(tablerCrane),
     Angle(tablerAngle),
     SoundWave(bootStrapSoundWave),
-    Card(materialSymbolsCreditCardHeart)
+    Card(materialSymbolsCreditCardHeart),
+    LightBlock(lightBlock)
 }
