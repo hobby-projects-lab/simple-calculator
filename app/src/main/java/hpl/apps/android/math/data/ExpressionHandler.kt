@@ -6,6 +6,7 @@ import java.math.BigDecimal
 import java.math.MathContext
 
 object ExpressionHandler {
+    const val INTERNAL_DECIMAL_SEPARATOR = '.'
     private const val ALLOWED_TRAILING_OPERATORS = "${Operator.ADD}"+
             "${Operator.SUB}"+
             "${Operator.MUL}"+

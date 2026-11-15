@@ -42,7 +42,7 @@ object GetData {
 
     const val MAX_PRECISION = UserPreferencesRepository.MAX_PRECISION
     const val MIN_PRECISION = UserPreferencesRepository.MIN_PRECISION
-    const val INTERNAL_DECIMAL_SEPARATOR = '.'
+    const val INTERNAL_DECIMAL_SEPARATOR = ExpressionHandler.INTERNAL_DECIMAL_SEPARATOR
     val decimalRegex = Regex("${Operator.SUB}?\\d+(\\.\\d*)?")
 
 }
