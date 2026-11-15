@@ -342,8 +342,13 @@ class CalculatorViewModel(
             }
             else -> {
                 if(button is TextButtonClass){
-                    val extraString = button.displayText?:button.text
-                    val newExpression = inputState.value.expression.substring(0, inputState.value.cursorPosition)+
+                    val prefix = inputState.value.expression.substring(0, inputState.value.cursorPosition)
+                    val extraString = if(button == TextButtonClass.DECIMAL_POINT && (prefix.isEmpty()||!prefix.last().isDigit())) {
+                        (TextButtonClass.ZERO.displayText?:TextButtonClass.ZERO.text)+(button.displayText?:button.text)
+                    }else{
+                        button.displayText?:button.text
+                    }
+                    val newExpression = prefix+
                             extraString+
                             inputState.value.expression.substring(inputState.value.cursorPosition)
                     setLoadingState(

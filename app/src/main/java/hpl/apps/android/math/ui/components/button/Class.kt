@@ -12,6 +12,7 @@ private val functions = GetData.functions()
 private  val constants = GetData.constants()
 private val operators = GetData.operators()
 private val expressions = GetData.expressions()
+private const val INTERNAL_DECIMAL_SEPARATOR = "${GetData.INTERNAL_DECIMAL_SEPARATOR}"
 
 interface MathButtonClass
 
@@ -37,7 +38,7 @@ enum class TextButtonClass(
     SEVEN("7"),
     EIGHT("8"),
     NINE("9"),
-    DECIMAL_POINT("."),
+    DECIMAL_POINT(INTERNAL_DECIMAL_SEPARATOR),
     SIGN(buttonText = "+/-", displayText = "-"),
     SWITCH_TO_FUNC("f(x)"),
     SWITCH_TO_FUNC_INV("f⁻¹(x)"),
