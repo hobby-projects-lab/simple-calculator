@@ -82,12 +82,6 @@ object CalculatorException{
     fun expressionWithTooLargeValues(){
         throwException(R.string.expression_with_too_large_values_error)
     }
-    fun factorialOfANonInteger(){
-        throwException(R.string.factorial_of_a_non_integer_error)
-    }
-    fun factorialOfANegativeNumber(){
-        throwException(R.string.factorial_of_a_negative_number_error)
-    }
 
     fun tempBelowAbsZero(){
         throwException(R.string.temp_below_abs_zero_error)
@@ -144,10 +138,7 @@ object KevalType: KevalNumber<BigDecimal> {
     fun toRadians(a: BigDecimal): BigDecimal = compute(listOf(a)){ BigDecimalMath.toRadians(it[0], getMathContext()) }
 
     fun factorial(a: BigDecimal): BigDecimal = compute(listOf(a)){
-        if(it[0] > UserPreferencesRepository.MAX_FACTORIAL_INPUT) CalculatorException.expressionWithTooLargeValues()
-        if(it[0].toBigInteger().toBigDecimal().compareTo(it[0]) != 0) CalculatorException.factorialOfANonInteger()
-        if(it[0] < ZERO) CalculatorException.factorialOfANegativeNumber()
-        BigDecimalMath.factorial(it[0], getMathContext())
+        BigDecimalMath.gamma(add(it[0], ONE), getMathContext())
     }
     fun modulus(a: BigDecimal, b: BigDecimal): BigDecimal = compute(listOf(a, b)) { it[0].remainder(it[1], getMathContext()) }
     fun power(a: BigDecimal, b: BigDecimal): BigDecimal = compute(listOf(a, b)){ BigDecimalMath.pow(it[0], it[1], getMathContext()) }

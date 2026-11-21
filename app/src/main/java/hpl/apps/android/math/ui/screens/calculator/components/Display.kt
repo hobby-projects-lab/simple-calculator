@@ -39,6 +39,7 @@ import hpl.apps.android.math.ui.components.button.OptionButton
 import hpl.apps.android.math.ui.components.button.TextButtonClass
 import hpl.apps.android.math.ui.screens.calculator.CalculatorLocalizer
 import hpl.apps.android.math.ui.screens.calculator.CalculatorViewModel
+import hpl.apps.android.math.ui.screens.utils.DISABLED_ALPHA
 import hpl.apps.android.math.ui.screens.utils.copyToClipboard
 import hpl.apps.android.math.ui.theme.CalculatorTypography
 import kotlinx.coroutines.awaitCancellation
@@ -50,8 +51,6 @@ fun CalculatorDisplay(
     modifier: Modifier = Modifier
 ){
     val localContext = LocalContext.current
-
-    val disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
 
     val focusRequester = remember { FocusRequester() }
 
@@ -160,7 +159,7 @@ fun CalculatorDisplay(
         Text(
             text = preview,
             style = CalculatorTypography.inputSmall,
-            color = disabledTextColor,
+            color = MaterialTheme.colorScheme.onSurface.copy(DISABLED_ALPHA),
             maxLines = 1,
             overflow = TextOverflow.StartEllipsis,
             modifier = Modifier

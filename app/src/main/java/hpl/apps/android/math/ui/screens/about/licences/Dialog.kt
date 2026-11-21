@@ -49,7 +49,7 @@ fun LicenceDialog(
                 text = licenceText,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
-                    .weight(1f)
+                    .weight(1f, fill = false)
                     .verticalScroll(scrollState)
                     .padding(vertical = dimensionResource(R.dimen.licence_dialog_vert_padding))
             )

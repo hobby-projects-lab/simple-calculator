@@ -31,9 +31,9 @@
     <string name="copied">Copied</string>
     <string name="backspace">Backspace</string>
     <string name="icons">Icons</string>
-    <string name="precision">Precision</string>
-    <string name="precision_constraints">Precision has to be an integer in the range [%1$d, %2$d]</string>
-    <string name="precision_description">Precision sets the maximum number of decimal places.</string>
+    <string name="decimal_places">Decimal places</string>
+    <string name="decimal_places_constraints">\"Decimal places\" has to be an integer in the range [%1$d, %2$d].</string>
+    <string name="decimal_places_description">The maximum number of decimal places to display</string>
     <string name="computing">Computing…</string>
 
     <!-- Dimensions -->

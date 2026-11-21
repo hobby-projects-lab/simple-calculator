@@ -1,22 +1,18 @@
 package hpl.apps.android.math.ui.screens.settings
 
-import android.content.Context
-import android.widget.Toast
-import androidx.compose.foundation.background
+import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -25,27 +21,60 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import hpl.apps.android.math.R
-import hpl.apps.android.math.ui.GetData
+import hpl.apps.android.math.ui.screens.utils.DISABLED_ALPHA
+
+
+@Composable
+private fun SettingsItem(
+    @StringRes id: Int,
+    @StringRes descriptionId: Int,
+    value: String,
+    selectSetting: (Int)-> Unit,
+    modifier: Modifier = Modifier
+){
+    Row(
+        modifier = modifier
+            .padding(dimensionResource(R.dimen.settings_item_padding))
+            .clickable{ selectSetting(id) }
+    ) {
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = stringResource(id),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Spacer(modifier = Modifier.padding(vertical = dimensionResource(R.dimen.settings_item_padding)))
+            Text(
+                text = stringResource(descriptionId),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onBackground.copy(DISABLED_ALPHA)
+            )
+        }
+        Button(onClick = { selectSetting(id) }) { Text(text = value) }
+    }
+}
 
 @Composable
 fun Settings(
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory)
 ){
-    val context = LocalContext.current
-    var selected: Boolean by rememberSaveable { mutableStateOf(false) }
+    val state by viewModel.decimalPlaces.collectAsState()
+    val scrollState = rememberScrollState()
+
+    var selected: Int? by rememberSaveable { mutableStateOf(null) }
+    val selectSetting = {id: Int -> selected = id}
+    val unselectSetting = { selected = null }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
+        modifier = modifier.verticalScroll(scrollState)
     ) {
         Text(
             text = stringResource(R.string.settings),
@@ -56,97 +85,21 @@ fun Settings(
                     horizontal = dimensionResource(R.dimen.heading_horiz_padding)
                 )
         )
-        Text(
-            text = stringResource(R.string.precision),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { selected = true }
-                .padding(
-                    vertical = dimensionResource(R.dimen.licence_type_item_vert_padding),
-                    horizontal = dimensionResource(R.dimen.licence_type_item_horiz_padding)
-                )
+        SettingsItem(
+            id = R.string.decimal_places,
+            descriptionId = R.string.decimal_places_description,
+            value = state.toString(),
+            selectSetting = {selectSetting(it)},
+            modifier = Modifier.fillMaxWidth()
         )
         HorizontalDivider()
     }
 
-    if(selected){
-        Dialog(onDismissRequest = { selected = false }) {
-            Column(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .clip(MaterialTheme.shapes.small)
-                    .background(color = MaterialTheme.colorScheme.background)
-                    .padding(
-                        horizontal = dimensionResource(R.dimen.precision_dialog_horiz_padding),
-                        vertical = dimensionResource(R.dimen.precision_dialog_vert_padding),
-                    )
-            ) {
-                val state by viewModel.precision.collectAsState()
-                var input by rememberSaveable { mutableStateOf("") }
-
-                val onDone = {
-                    val x = input.toIntOrNull()
-                    if (x == null){
-                        precisionConstraintsMessage(context)
-                    }else{
-                        viewModel.setPrecision(x)
-                        selected = false
-                    }
-                }
-
-                Text(
-                    text = stringResource(R.string.precision),
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.precision_dialog_vert_padding)))
-                HorizontalDivider()
-                Text(
-                    text = stringResource(R.string.precision_description),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.precision_dialog_vert_padding)))
-                TextField(
-                    value = input,
-                    placeholder = { Text(state.toString()) },
-                    onValueChange = {
-                        if(it.isEmpty()){
-                            input  = it
-                        }else{
-                            val x = it.toIntOrNull()
-                            if (x == null || x < GetData.MIN_PRECISION || x > GetData.MAX_PRECISION){
-                                precisionConstraintsMessage(context)
-                            }else{
-                                input = it
-                            }
-                        }
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        showKeyboardOnFocus = true,
-                        imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = { onDone() }
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.precision_dialog_vert_padding)))
-                Button(onClick = { onDone() }) { Text(text = stringResource(R.string.save)) }
-            }
-        }
+    if(selected == R.string.decimal_places){
+        DecimalPlacesDialog(
+            id = R.string.decimal_places,
+            onDismiss = { unselectSetting() },
+            viewModel = viewModel
+        )
     }
-}
-
-private fun precisionConstraintsMessage(context: Context){
-    Toast.makeText(
-        context,
-        context.getString(
-            R.string.precision_constraints,
-            GetData.MIN_PRECISION,
-            GetData.MAX_PRECISION
-        ),
-        Toast.LENGTH_LONG
-    ).show()
 }

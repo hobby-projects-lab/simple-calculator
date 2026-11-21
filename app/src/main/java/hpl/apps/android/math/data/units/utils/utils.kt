@@ -5,129 +5,110 @@ import hpl.apps.android.math.data.KevalType
 import java.math.BigDecimal
 
 
-/* Time */
+/* Length in metre*/
+val au: BigDecimal   = BigDecimal.valueOf(149_597_870_700L, 0)
+val ft: BigDecimal   = BigDecimal.valueOf(3_048L, 4)
+val inch: BigDecimal = BigDecimal.valueOf(254L, 4)
+val ly: BigDecimal   = BigDecimal.valueOf(9_460_730_472_580_800L, 0)
+val mi: BigDecimal   = BigDecimal.valueOf(1_609_344L, 3)
+val yd: BigDecimal   = BigDecimal.valueOf(9_144L, 4)
 
-//day in seconds
+
+
+/* Time in second */
+val min: BigDecimal = BigDecimal.valueOf(60L, 0)
+val h: BigDecimal   = BigDecimal.valueOf(3_600L, 0)
 fun day(): BigDecimal = multiply(D24, h)
-
-//week in seconds
 fun week(): BigDecimal = multiply(D7, day())
-
-//year in seconds
 fun year(): BigDecimal = multiply(D365, day())
-//leap year in seconds
 fun leapYear(): BigDecimal = multiply(D366, day())
 
 
 
-/* Angle */
-//radian in degree
+/* Angle in degree */
 fun rad(): BigDecimal = divide(D180, KevalType.pi())
+val gon: BigDecimal = BigDecimal.valueOf(9L, 1)
+val tr: BigDecimal  = BigDecimal.valueOf(360L, 0)
 
 
-
-/* Energy */
-//kilocalorie in joule
+/* Energy in joule */
 fun kcal(): BigDecimal = multiply(cal, THOUSAND)
+val ev: BigDecimal  = BigDecimal.valueOf(1_602_176_634L, 28)
+val cal: BigDecimal = BigDecimal.valueOf(4_184L, 3)
+val btu: BigDecimal = BigDecimal.valueOf(105_505_585_262L, 8)
 
 
-
-/* Mass */
-//pound in gram
+/* Mass in gram */
 fun lb(): BigDecimal = multiply(D0_45359237, THOUSAND)
-
-//ounce in gram
 fun oz(): BigDecimal = divide(lb(), D16)
 
 
 
-/* Speed */
-//km/h in m/s
+/* Speed in metre/second */
+val ftps: BigDecimal = ft
+val c: BigDecimal    = BigDecimal.valueOf(299_792_458L, 0)
 fun kmph(): BigDecimal = divide(THOUSAND, h)
-
-//knot in m/s
 fun knot(): BigDecimal = divide(multiply(D1_852, THOUSAND), D3600)
-
-//mile per hour in m/s
 fun mph(): BigDecimal = divide(mi, D3600)
 
 
 
-/* Area */
-// square yard in m²
+/* Acceleration in metre/second² */
+val g: BigDecimal = BigDecimal.valueOf(980_665L, 5)
+
+
+/* Area in metre² */
 fun sqYd(): BigDecimal = multiply(yd, yd)
-
-//square mile in m²
 fun sqMi(): BigDecimal = multiply(mi, mi)
-
-//square foot in m²
 fun sqFt(): BigDecimal = multiply(ft, ft)
-
-//square inch in m²
 fun sqIn(): BigDecimal = multiply(inch, inch)
-
-//acre in m²
 fun ac(): BigDecimal = multiply(D4840, sqYd())
 
 
 
-/* Volume */
-//cubic foot in cubic metre
+/* Volume in cubic metre */
 fun ft3(): BigDecimal = multiply(ft, sqFt())
-
-//cubic inch in cubic metre
 fun in3(): BigDecimal = multiply(inch, sqIn())
-
-//acre foot in cubic metre
 fun acFt(): BigDecimal = multiply(ac(), ft)
 
 
 
-/* Density */
-//pound per cubic foot in g/l
+/* Density in gram/litre */
 fun lbFt3(): BigDecimal = divide(lb(), multiply(ft3(), THOUSAND))
-
-//pound per cubic foot in g/l
 fun ozIn3(): BigDecimal = divide(oz(), multiply(in3(), THOUSAND))
 
 
 
-/* Force */
-//pound-force in newton
+/* Force in newton */
 fun lbf(): BigDecimal = multiply(divide(lb(), THOUSAND), g)
 fun ozf(): BigDecimal = divide(lbf(), D16)
 
 
 
-/* Work */
-//pound foot in N m
+/* Work in newton metre */
 fun lbft(): BigDecimal = multiply(lbf(), ft)
-
-//ounce inch in N m
 fun ozin(): BigDecimal = multiply(ozf(), inch)
 
 
 
-/* Power */
-//horsepower in watt
+/* Power in watt */
 fun hp(): BigDecimal = divide(multiply(D33E3, lbft()), min)
-
-//BTU/h in watt
 fun btuph(): BigDecimal = divide(btu, h)
 
 
 
-/* Pressure */
-
-//torr in pascal
+/* Pressure in pascal */
+val atm: BigDecimal  = BigDecimal.valueOf(101_325L, 0)
+val mmHg: BigDecimal = BigDecimal.valueOf(133_322_387_415L, 9)
+val inHg: BigDecimal = BigDecimal.valueOf(3_386_389L, 3)
 fun torr(): BigDecimal = divide(atm, D760)
-
-//pound per square inch in pascal
 fun psi(): BigDecimal = divide(lbf(), sqIn())
 
 
 
-/* Storage in bit*/
+/* Storage in bit */
+val kib: BigDecimal = D1024
+val b: BigDecimal   = BigDecimal.valueOf(8L, 0)
 fun mib(): BigDecimal = multiply(D1024, kib)
 fun gib(): BigDecimal = multiply(D1024, mib())
 fun tib(): BigDecimal = multiply(D1024, gib())
@@ -145,11 +126,12 @@ fun tB(): BigDecimal = multiply(THOUSAND, gB())
 fun tiB(): BigDecimal = multiply(D1024, giB())
 
 
+/* Temperature in Celsius */
+val abs_zero: BigDecimal = BigDecimal.valueOf(-27_315L, 2)
 
 fun celsiusToFahrenheit(celsius: BigDecimal): BigDecimal{
     return fromCelsius(celsius){ add(multiply(it, D1_8), D32) }
 }
-
 fun fahrenheitToCelsius(fahrenheit: BigDecimal): BigDecimal{
     return toCelsius(fahrenheit){ divide(subtract(it, D32), D1_8) }
 }
@@ -158,7 +140,6 @@ fun celsiusToRankine(celsius: BigDecimal): BigDecimal{
     return fromCelsius(celsius){ multiply(subtract(it, abs_zero), D1_8) }
 
 }
-
 fun rankineToCelsius(rankine: BigDecimal): BigDecimal{
     return toCelsius(rankine){ add(divide(it, D1_8), abs_zero) }
 }
