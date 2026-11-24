@@ -46,7 +46,9 @@ aboutLibraries{
 android {
     namespace = project.property(AppInfo.APP_ID_KEY).toString()
     compileSdk {
-        version = release(project.property(AppInfo.COMPILE_SDK_KEY).toString().toInt())
+        version = release(project.property(AppInfo.COMPILE_SDK_KEY).toString().toInt()){
+            minorApiLevel = project.property(AppInfo.COMPILE_SDK_MINOR_KEY).toString().toInt()
+        }
     }
 
     defaultConfig {
@@ -154,6 +156,7 @@ private object AppInfo {
     const val MIN_SDK_KEY = "MIN_SDK"
     const val TARGET_SDK_KEY = "TARGET_SDK"
     const val COMPILE_SDK_KEY = "COMPILE_SDK"
+    const val COMPILE_SDK_MINOR_KEY = "COMPILE_SDK_MINOR"
 
     const val PROJECT_LICENCE_FILE_NAME = "LICENSE"
 

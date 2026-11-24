@@ -141,9 +141,7 @@ private suspend fun compute(precision: Int, func: ()-> BigDecimal): BigDecimal{
 }
 
 
-private val cleanRange = BigDecimal.valueOf(-1L, -10)..BigDecimal.valueOf(1L, -10)
-private val cleanRange2 = BigDecimal.valueOf(-1L, 10)..BigDecimal.valueOf(1L, 10)
 private fun BigDecimal.clean(): String {
     val x = this.stripTrailingZeros()
-    return if(x !in cleanRange || x in cleanRange2) x.toString() else x.toPlainString()
+    return if(UserPreferencesRepository.isInSmallRange(x) || UserPreferencesRepository.isInLargeRange(x)) x.toString() else x.toPlainString()
 }

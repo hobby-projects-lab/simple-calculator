@@ -40,8 +40,8 @@ object GetData {
         return dimensionUnitsMap
     }
 
-    const val MAX_PRECISION = UserPreferencesRepository.MAX_PRECISION
-    const val MIN_PRECISION = UserPreferencesRepository.MIN_PRECISION
+    const val MAX_DECIMAL_PLACES = UserPreferencesRepository.MAX_DECIMAL_PLACES
+    const val MIN_DECIMAL_PLACES = UserPreferencesRepository.MIN_DECIMAL_PLACES
     const val INTERNAL_DECIMAL_SEPARATOR = ExpressionHandler.INTERNAL_DECIMAL_SEPARATOR
     val decimalRegex = Regex("${Operator.SUB}?\\d+(\\.\\d*)?")
 

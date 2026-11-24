@@ -15,14 +15,16 @@
     <dimen name="converter_input_field_horiz_padding">5dp</dimen>
     <dimen name="converter_screen_unit_label_horiz_padding">5dp</dimen>
 
+    <dimen name="generic_dialog_horiz_padding">5dp</dimen>
+    <dimen name="generic_dialog_vert_padding">5dp</dimen>
+
     <dimen name="licence_dialog_horiz_padding">5dp</dimen>
     <dimen name="licence_dialog_vert_padding">5dp</dimen>
     <dimen name="licence_type_item_vert_padding">15dp</dimen>
     <dimen name="licence_type_item_horiz_padding">5dp</dimen>
     <dimen name="licence_screen_horiz_padding">5dp</dimen>
 
-    <dimen name="precision_dialog_horiz_padding">5dp</dimen>
-    <dimen name="precision_dialog_vert_padding">5dp</dimen>
+    <dimen name="settings_item_padding">5dp</dimen>
 
     <dimen name="heading_vert_padding">15dp</dimen>
     <dimen name="heading_horiz_padding">5dp</dimen>

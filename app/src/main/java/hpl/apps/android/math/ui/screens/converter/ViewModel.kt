@@ -135,7 +135,7 @@ class ConverterViewModel(
             if(numberAsString.matches(GetData.decimalRegex)) {
                 converterFunction(
                     numberAsString,
-                    userPreferencesRepository.precision.first(),
+                    userPreferencesRepository.decimalPlaces.first(),
                     from,
                     to
                 )

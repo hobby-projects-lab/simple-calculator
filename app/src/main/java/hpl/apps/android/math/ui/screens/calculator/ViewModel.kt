@@ -155,7 +155,7 @@ class CalculatorViewModel(
     private suspend fun evaluateExpression(processedExpression: String): String? = withContext(defaultDispatcher) {
             evaluate(
                 processedExpression,
-                userPreferencesRepository.precision.first(),
+                userPreferencesRepository.decimalPlaces.first(),
                 degreeMode.value
             )
         }

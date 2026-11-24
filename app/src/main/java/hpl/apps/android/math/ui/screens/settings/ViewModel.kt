@@ -23,17 +23,17 @@ class SettingsViewModel(
     private val userPreferencesRepository: UserPreferencesRepository,
     private val defaultDispatcher: CoroutineDispatcher
 ): ViewModel(){
-    val precision: StateFlow<Int> =
-        userPreferencesRepository.precision.map { it }.stateIn(
+    val decimalPlaces: StateFlow<Int> =
+        userPreferencesRepository.decimalPlaces.map { it }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = runBlocking {
-                userPreferencesRepository.precision.first()
+                userPreferencesRepository.decimalPlaces.first()
             }
         )
-    fun setPrecision(precision: Int) {
+    fun setDecimalPlaces(value: Int) {
         viewModelScope.launch {
-            withContext(defaultDispatcher){ userPreferencesRepository.savePrecisionPreference(precision) }
+            withContext(defaultDispatcher){ userPreferencesRepository.saveDecimalPlaces(value) }
         }
     }
 

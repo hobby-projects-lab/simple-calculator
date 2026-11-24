@@ -4,6 +4,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.widget.Toast
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,10 +29,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.window.Dialog
 import androidx.core.content.ContextCompat.getString
 import hpl.apps.android.math.R
+
+
+const val DISABLED_ALPHA = 0.38f
 
 fun copyToClipboard(context: Context, text: String) {
     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -38,6 +45,44 @@ fun copyToClipboard(context: Context, text: String) {
     clipboard.setPrimaryClip(clip)
 
     Toast.makeText(context, getString(context, R.string.copied), Toast.LENGTH_SHORT).show()
+}
+
+@Composable
+fun GenericDialog(
+    @StringRes id: Int,
+    onDismissRequest: ()-> Unit,
+    content: @Composable ()-> Unit,
+    footer: @Composable (()-> Unit)-> Unit
+){
+    Dialog(onDismissRequest = onDismissRequest) {
+        Column(
+            modifier = Modifier
+                .wrapContentSize()
+                .clip(MaterialTheme.shapes.medium)
+                .background(color = MaterialTheme.colorScheme.background)
+                .padding(
+                    horizontal = dimensionResource(R.dimen.generic_dialog_horiz_padding),
+                    vertical = dimensionResource(R.dimen.generic_dialog_vert_padding),
+                )
+        ) {
+            Text(
+                text = stringResource(id),
+                modifier = Modifier.padding(vertical = dimensionResource(R.dimen.generic_dialog_vert_padding))
+            )
+            HorizontalDivider()
+            Column(
+                modifier = Modifier
+                    .weight(1f, fill = false)
+                    .padding(vertical = dimensionResource(R.dimen.generic_dialog_vert_padding))
+            ){
+                content()
+            }
+            HorizontalDivider()
+            Spacer(modifier = Modifier.padding(vertical = dimensionResource(R.dimen.generic_dialog_vert_padding)))
+            footer(onDismissRequest)
+            Spacer(modifier = Modifier.padding(vertical = dimensionResource(R.dimen.generic_dialog_vert_padding)))
+        }
+    }
 }
 
 
